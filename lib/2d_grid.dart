@@ -318,8 +318,7 @@ class Grid extends ChangeNotifier{
 }
 
 class GridWidget extends StatefulWidget {
-  GridWidget(this.rows,this.columns,this.unitSize,this.width, this.height){
-  }
+  GridWidget(this.rows,this.columns,this.unitSize,this.width, this.height);
   final int rows;
   final int columns;
   final double unitSize;
