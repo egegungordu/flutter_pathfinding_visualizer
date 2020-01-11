@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_2d_grid/2d_grid.dart';
 import 'package:provider/provider.dart';
@@ -109,6 +108,9 @@ class _GridGestureDetectorState extends State<GridGestureDetector> {
               onLongPressStart: (details){
                 tapUpdate(details.localPosition);
               },
+              // onPanDown: (details) {
+              //   tapUpdate(details.localPosition);
+              // },
               child: widget.child
             )
           )

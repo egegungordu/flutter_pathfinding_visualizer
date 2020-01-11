@@ -24,13 +24,18 @@ enum GridGenerationFunction{
   recursive,
 }
 
+enum VisualizerAlgorithm{
+  astar,
+  dijkstra,
+  dfs,
+  bfs
+}
 
 enum Brush{
   wall,
   start,
   finish
 }
-
 
 class Grid extends ChangeNotifier{
 

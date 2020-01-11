@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_2d_grid/2d_grid.dart';
 import 'package:flutter_2d_grid/animated_button_popup.dart';
+import 'package:flutter_2d_grid/fab_with_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,38 +16,6 @@ class _VisualizerState extends State<Visualizer> {
   bool isRunning = false;
   List<String> algorithms = ["Maze","Random","Recursive"];
   String selectedAlg = "Maze";
-
-  void disableButtons(int i){
-    switch (i) {
-      case 1: //brush
-        grid.isPanning = false;
-        drawTool = true;
-        setState(() {
-          _color1 = Colors.orangeAccent;
-          _color2 = Colors.white;
-          _color3= Colors.white;
-        });
-        break;
-      case 2: //eraser
-        grid.isPanning = false;
-        drawTool = false;
-        setState(() {
-          _color1 = Colors.white;
-          _color2 = Colors.orangeAccent;
-          _color3= Colors.white;
-        });
-        break;
-      case 3: // pan
-        grid.isPanning = true;
-        setState(() {
-          _color1 = Colors.white;
-          _color2 = Colors.white;
-          _color3= Colors.orangeAccent;
-        });
-        break;
-      default:
-    }
-  }
 
   void setActiveButton(int i){
     switch (i) {
@@ -87,6 +56,7 @@ class _VisualizerState extends State<Visualizer> {
       _disabled3 = true;
       _disabled4 = true;
       _disabled5 = true;
+      _disabled6 = true;
     });
   }
   void enableBottomButtons(){
@@ -96,6 +66,7 @@ class _VisualizerState extends State<Visualizer> {
       _disabled3 = false;
       _disabled4 = false;
       _disabled5 = false;
+      _disabled6 = false;
     });
   }
 
@@ -104,15 +75,18 @@ class _VisualizerState extends State<Visualizer> {
   Color _color3 = Colors.white;
   Color _color4 = Colors.white;
   Color _color5 = Colors.white;
+  Color _color6 = Colors.lightGreen[500];
+
   bool _disabled1 = false;
   bool _disabled2 = false;
   bool _disabled3 = false;
   bool _disabled4 = false;
   bool _disabled5 = false;
+  bool _disabled6 = false;
 
   bool drawTool = true;
   
-  Grid grid = Grid(35, 50, 40, 5,5, 10,10);
+  Grid grid = Grid(35, 50, 50, 5,5, 10,10);
 
   double brushSize = 0.1;
 
@@ -178,15 +152,83 @@ class _VisualizerState extends State<Visualizer> {
         title: Text("Pathfinding Visualizer",style: TextStyle(color: Colors.black),),
         iconTheme: IconThemeData(color: Color(0xFF494964)),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.lightGreen[500],
-        label: Text("Visualize", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),),
-        onPressed: (){
-          disableBottomButtons();
-          setActiveButton(3);
-          Timer(Duration(milliseconds: 2000),(){
-            enableBottomButtons();
-          });
+      floatingActionButton: Consumer<PopUpModel>(
+        builder: (_,model,__) {
+          return FabWithPopUp(
+            disabled: _disabled6,
+            color: _color6,
+            width: 150,
+            direction: AnimatedButtonPopUpDirection.vertical,
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                text: "Visualize\n",
+                style: TextStyle(color: Color(0xFF2E2E2E), fontSize: 22, height: 1.0),
+                children: [
+                  TextSpan(
+                    style: TextStyle(color: Color(0xFF2E2E2E),fontSize: 16),
+                    text: ((){
+                      switch (model.selectedPathAlg) {
+                        case VisualizerAlgorithm.astar:
+                          return "A*";
+                          break;
+                        case VisualizerAlgorithm.dijkstra:
+                          return "Dijkstra";
+                          break;
+                        case VisualizerAlgorithm.dfs:
+                          return "DFS";
+                          break;
+                        case VisualizerAlgorithm.bfs:
+                          return "BFS";
+                          break;
+                        default:
+                        return "Maze";
+                      }
+                    }())
+                  )
+                ]
+              ),
+            ),
+            onPressed: (){
+              setActiveButton(3);
+              setState(() {
+                _color6 = Colors.redAccent;
+              });
+              disableBottomButtons();
+              Timer(Duration(milliseconds: 5000), (){
+                setState(() {
+                  _color6 = Colors.lightGreen[500];
+                });
+                enableBottomButtons();
+              });
+            },
+            items: <AnimatedButtonPopUpItem>[
+              AnimatedButtonPopUpItem(
+                child: Text("A*",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.pAlgColor1),),
+                onPressed: () {
+                  model.setActivePAlgorithm(1);
+                },
+              ),
+              AnimatedButtonPopUpItem(
+                child: Text("Dijkstra",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.pAlgColor2),),
+                onPressed: () {
+                  model.setActivePAlgorithm(2);
+                },
+              ),
+              AnimatedButtonPopUpItem(
+                child: Text("DFS",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.pAlgColor3),),
+                onPressed: () {
+                  model.setActivePAlgorithm(3);
+                },
+              ),
+              AnimatedButtonPopUpItem(
+                child: Text("BFS",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.pAlgColor4),),
+                onPressed: () {
+                  model.setActivePAlgorithm(4);
+                },
+              ),
+            ],
+          );
         },
       ),
       bottomNavigationBar: BottomAppBar(
@@ -338,12 +380,14 @@ class _VisualizerState extends State<Visualizer> {
                     _color4 = Colors.redAccent;
                     _disabled4 = true;
                     _disabled5 = true;
+                    _disabled6 = true;
                   });
                   grid.clearBoard(
                     onFinished: () {
                       setState(() {
                         _disabled4 = false;
                         _disabled5 = false;
+                        _disabled6 = false;
                         _color4 = Colors.white;
                       });
                     }
@@ -356,38 +400,34 @@ class _VisualizerState extends State<Visualizer> {
       ),
       body: Consumer<PopUpModel>(
         builder: (_,model,__){
-          return Stack(
-            children: <Widget>[
-              grid.gridWidget(
-                onTapNode: (i,j) {
-                  if (drawTool) {
-                    if (model.selectedBrush == Brush.wall) {
-                      grid.addNode(i, j, Brush.wall);
-                    }else{
-                      grid.hoverSpecialNode(i, j, model.selectedBrush);
-                    }
-                  }else{
-                    grid.removeNode(i, j, 1);
-                  }
-                },
-                onDragNode: (i, j, k, l, t) {
-                  if (drawTool) {
-                    if (model.selectedBrush != Brush.wall) {
-                      grid.hoverSpecialNode(k, l,model.selectedBrush);
-                    }else{
-                      grid.addNode(k, l, model.selectedBrush);
-                    }
-                  }else{
-                    grid.removeNode(k, l, 1);
-                  }
-                },
-                onDragNodeEnd: () {
-                  if (model.selectedBrush != Brush.wall && drawTool) {
-                    grid.addSpecialNode(model.selectedBrush);
-                  }
+          return grid.gridWidget(
+            onTapNode: (i,j) {
+              if (drawTool) {
+                if (model.selectedBrush == Brush.wall) {
+                  grid.addNode(i, j, Brush.wall);
+                }else{
+                  grid.hoverSpecialNode(i, j, model.selectedBrush);
                 }
-              ),
-            ],
+              }else{
+                grid.removeNode(i, j, 1);
+              }
+            },
+            onDragNode: (i, j, k, l, t) {
+              if (drawTool) {
+                if (model.selectedBrush != Brush.wall) {
+                  grid.hoverSpecialNode(k, l,model.selectedBrush);
+                }else{
+                  grid.addNode(k, l, model.selectedBrush);
+                }
+              }else{
+                grid.removeNode(k, l, 1);
+              }
+            },
+            onDragNodeEnd: () {
+              if (model.selectedBrush != Brush.wall && drawTool) {
+                grid.addSpecialNode(model.selectedBrush);
+              }
+            }
           );
         },
       ),

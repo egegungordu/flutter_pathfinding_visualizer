@@ -8,7 +8,7 @@ enum AnimatedButtonPopUpDirection{
 }
 
 class AnimatedButtonWithPopUp extends StatefulWidget {
-  AnimatedButtonWithPopUp({@required this.onPressed,this.items, @required this.child, this.color = Colors.white, this.onLongPressed, this.disabled = false, this.direction = AnimatedButtonPopUpDirection.horizontal, this.width = 50, this.height = 50});
+  AnimatedButtonWithPopUp({@required this.onPressed,this.items, @required this.child, this.color = Colors.white, this.onLongPressed, this.disabled = false, this.direction = AnimatedButtonPopUpDirection.horizontal, this.width = 50, this.height = 50, this.popUpOffset = const Offset(0,0)});
   final bool disabled;
   final Function onPressed;
   final List<AnimatedButtonPopUpItem> items;
@@ -18,6 +18,7 @@ class AnimatedButtonWithPopUp extends StatefulWidget {
   final AnimatedButtonPopUpDirection direction;
   final double width;
   final double height;
+  final Offset popUpOffset;
 
   @override
   _AnimatedButtonWithPopUpState createState() => _AnimatedButtonWithPopUpState();
@@ -123,8 +124,8 @@ class _AnimatedButtonWithPopUpState extends State<AnimatedButtonWithPopUp> with 
       widget.width * widget.items.length : widget.width; 
 
     Offset boxOffset = Offset(
-      offset.dx + (size.width - boxWidth)/2,
-      offset.dy - boxHeight - 10
+      offset.dx + (size.width - boxWidth)/2 + widget.popUpOffset.dx,
+      offset.dy - boxHeight - 10 + widget.popUpOffset.dy
     );
 
     return OverlayEntry(
@@ -331,6 +332,12 @@ class PopUpModel extends ChangeNotifier{
   Color algColor2 = Color(0xFF2E2E2E);
   Color algColor3 = Color(0xFF2E2E2E);
   GridGenerationFunction selectedAlg = GridGenerationFunction.maze;
+
+  Color pAlgColor1 = Colors.lightGreen[500];
+  Color pAlgColor2 = Color(0xFF2E2E2E);
+  Color pAlgColor3 = Color(0xFF2E2E2E);
+  Color pAlgColor4 = Color(0xFF2E2E2E);
+  VisualizerAlgorithm selectedPathAlg = VisualizerAlgorithm.astar;
   
   void setActiveBrush(int i){
     switch (i) {
@@ -361,25 +368,63 @@ class PopUpModel extends ChangeNotifier{
 
   void setActiveAlgorithm(int i){
     switch (i) {
-      case 1: //wall
+      case 1: //maze
         algColor1 = Colors.orangeAccent;
         algColor2 = Color(0xFF2E2E2E);
         algColor3 = Color(0xFF2E2E2E);
         selectedAlg = GridGenerationFunction.maze;
         notifyListeners();
         break;
-      case 2: //start
+      case 2: //random
         algColor1 = Color(0xFF2E2E2E);
         algColor2 = Colors.orangeAccent;
         algColor3 = Color(0xFF2E2E2E);
         selectedAlg = GridGenerationFunction.random;
         notifyListeners();
         break;
-      case 3: //finish
+      case 3: //recursive
         algColor1 = Color(0xFF2E2E2E);
         algColor2 = Color(0xFF2E2E2E);
         algColor3 = Colors.orangeAccent;
         selectedAlg = GridGenerationFunction.recursive;
+        notifyListeners();
+        break;
+      default:
+    }
+  }
+
+  void setActivePAlgorithm(int i){
+    switch (i) {
+      case 1: //astar
+        pAlgColor1 = Colors.lightGreen[500];
+        pAlgColor2 = Color(0xFF2E2E2E);
+        pAlgColor3 = Color(0xFF2E2E2E);
+        pAlgColor4 = Color(0xFF2E2E2E);
+        selectedPathAlg = VisualizerAlgorithm.astar;
+        notifyListeners();
+        break;
+      case 2: //dijkstra
+        pAlgColor1 = Color(0xFF2E2E2E);
+        pAlgColor2 = Colors.lightGreen[500];
+        pAlgColor3 = Color(0xFF2E2E2E);
+        pAlgColor4 = Color(0xFF2E2E2E);
+        selectedPathAlg = VisualizerAlgorithm.dijkstra;
+        notifyListeners();
+        break;
+      case 3: //dfs
+        pAlgColor1 = Color(0xFF2E2E2E);
+        pAlgColor2 = Color(0xFF2E2E2E);
+        pAlgColor3 = Colors.lightGreen[500];
+        pAlgColor4 = Color(0xFF2E2E2E);
+        selectedPathAlg = VisualizerAlgorithm.dfs;
+        notifyListeners();
+        break;
+      case 4: //bfs
+        pAlgColor1 = Color(0xFF2E2E2E);
+        pAlgColor2 = Color(0xFF2E2E2E);
+        pAlgColor3 = Color(0xFF2E2E2E);
+        pAlgColor4 = Colors.lightGreen[500];
+        selectedPathAlg = VisualizerAlgorithm.bfs;
         notifyListeners();
         break;
       default:
