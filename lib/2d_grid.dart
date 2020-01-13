@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_2d_grid/algorithms.dart';
 import 'package:flutter_2d_grid/gesture_handler.dart';
 import 'package:flutter_2d_grid/node_widgets.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,8 @@ enum Brush{
   start,
   finish,
   closed,
-  open
+  open,
+  shortestPath
 }
 
 class Grid extends ChangeNotifier{
@@ -45,6 +47,7 @@ class Grid extends ChangeNotifier{
     nodeTypes = List.generate(rows, (_) => List.filled(columns, 0));
     nodes = List.generate(rows, (_) => List.filled(columns, null));
     staticNodes = List.generate(rows, (_) => List.filled(columns, null));
+    staticShortPathNode = List.generate(rows, (_) => List.filled(columns, null));
 
     // double xBox = (width - rows - 1) / rows;
     // double yBox = (height - columns - 1) / columns;
@@ -70,13 +73,15 @@ class Grid extends ChangeNotifier{
   final double unitSize;
   List<List<Widget>> nodes;
   List<List<int>> nodeTypes;
-  List<List<Rect>> staticNodes;
+  List<List<Color>> staticNodes;
+  List<List<Color>> staticShortPathNode;
 
   Widget gridWidget({
     Function(int i, int j) onTapNode, 
     Function(int i, int j, int k , int l, int type) onDragNode, 
     Function(double scale, double zoom) onScaleUpdate,
-    Function onDragNodeEnd}){
+    Function onDragNodeEnd,
+    Node currentNode}){
     return ChangeNotifierProvider.value(
       value: this,
       child: GridGestureDetector(
@@ -90,7 +95,7 @@ class Grid extends ChangeNotifier{
         nodeTypes: nodeTypes,
         onScaleUpdate: (scale,zoom) => 0,//updateDecorationScale(scale),
         onDragNodeEnd: () => onDragNodeEnd(),
-        child: GridWidget(rows,columns,unitSize,width,height)
+        child: GridWidget(rows,columns,unitSize,width,height),
       ),
     );
   }
@@ -102,20 +107,21 @@ class Grid extends ChangeNotifier{
     return false;
   }
 
-  void _updateStaticNode(int i, int j, Rect rect){
+  void _updateStaticNode(int i, int j, Color color){
     if(boundaryCheckFailed(i, j)){
       return;
     }
-    staticNodes[i][j] = rect;
+    staticNodes[i][j] = color;
     notifyListeners();
   }
 
   void clearPaths(){
     //nodeTypes.forEach((f) => f.where((f) => f == 4 || f == 5).forEach((f) => 0));
+    staticShortPathNode = List.generate(rows, (_) => List.filled(columns, null));
     for (var i = 0; i < nodeTypes.length; i++) {
       for (var j = 0; j < nodeTypes[0].length; j++) {
         removePath(i, j);
-        removePath(i, j);
+        //removePath(i, j);
       }
     }
   }
@@ -127,7 +133,7 @@ class Grid extends ChangeNotifier{
           key: UniqueKey(),
           left: 0.50 + i * (unitSize.toDouble() + 1),
           top: 0.50 + j * (unitSize.toDouble() + 1),
-          child: NodeImageWidget(unitSize, "assets/images/start_node.png")
+          child: NodeImageWidget(unitSize, "assets/images/start_node.png",)
         );
         break;
       case Brush.finish:
@@ -155,12 +161,16 @@ class Grid extends ChangeNotifier{
             key: UniqueKey(),
             left: 0.50 + i * (unitSize.toDouble() + 1),
             top: 0.50 + j * (unitSize.toDouble() + 1),
-            child: WallNodePaintWidget(unitSize, i, j, (i, j, rect) {
-              _updateStaticNode(i, j, rect);
-            },
-            (i, j) {
-              removeNodeWidgetOnly(i, j);
-            })
+            child: WallNodePaintWidget(
+              color: Colors.blueGrey.shade900,
+              unitSize: unitSize,
+              i: i,
+              j: j,
+              callback: (i, j, color) {
+                _updateStaticNode(i, j, color);
+                removeNodeWidgetOnly(i, j);
+              },
+            )
           );
           break;
         case Brush.start:
@@ -182,24 +192,41 @@ class Grid extends ChangeNotifier{
           );
           break;
         case Brush.open:
-        nodeTypes[i][j] = 4;
+          nodeTypes[i][j] = 4;
           nodes[i][j] = Positioned(
             key: UniqueKey(),
             left: 0.50 + i * (unitSize.toDouble() + 1),
             top: 0.50 + j * (unitSize.toDouble() + 1),
-            child: OpenNodePaintWidget(unitSize)
+            child: VisitedNodePaintWidget(
+              color: Colors.cyan.withOpacity(0.5),
+              unitSize: unitSize,
+              i: i,
+              j: j,
+              callback: (i, j, color) {
+                _updateStaticNode(i, j, color);
+                removeNodeWidgetOnly(i, j);
+              },
+            )
           );
           break;
         case Brush.closed:
-        nodeTypes[i][j] = 5;
+          nodeTypes[i][j] = 5;
           nodes[i][j] = Positioned(
             key: UniqueKey(),
             left: 0.50 + i * (unitSize.toDouble() + 1),
             top: 0.50 + j * (unitSize.toDouble() + 1),
-            child: ClosedNodePaintWidget(unitSize)
+            child: VisitedNodePaintWidget(
+              color: Colors.purple.withOpacity(0.5),
+              unitSize: unitSize,
+              i: i,
+              j: j,
+              callback: (i, j, color) {
+                _updateStaticNode(i, j, color);
+                removeNodeWidgetOnly(i, j);
+              },
+            )
           );
           break;
-          
         default:
       }
       notifyListeners();
@@ -231,6 +258,16 @@ class Grid extends ChangeNotifier{
     }
   }
 
+  void drawPath(Node lastNode){
+    staticShortPathNode = List.generate(rows, (_) => List.filled(columns, null));
+
+    Node currentNode = lastNode;
+    while (currentNode.parent != null) {
+      staticShortPathNode[currentNode.i][currentNode.j] = Colors.amber;
+      currentNode = currentNode.parent;
+    }
+    notifyListeners();
+  }
 
   void removeNodeWidgetOnly(int i, int j){
     if(boundaryCheckFailed(i, j)){
@@ -254,9 +291,6 @@ class Grid extends ChangeNotifier{
   }
 
   void removePath(int i, int j){
-    if(boundaryCheckFailed(i, j)){
-      return;
-    }
     if (nodeTypes[i][j] == 4 || nodeTypes[i][j] == 5) {
       staticNodes[i][j] = null;
       nodeTypes[i][j] = 0;
@@ -269,9 +303,10 @@ class Grid extends ChangeNotifier{
   void generateBoard({@required GridGenerationFunction function, @required Function onFinished}){
     int i = 0;
     int j = 0;
+    clearPaths();
     switch (function) {
       case GridGenerationFunction.random:
-        Timer.periodic(Duration(microseconds: 1000), (timer) {
+        Timer.periodic(Duration(microseconds: 10), (timer) {
           removeNode(i, j, 1);
           if (Random().nextDouble() < 0.3) {
             addNode(i, j, Brush.wall);
@@ -381,28 +416,35 @@ class GridWidget extends StatefulWidget {
 
 class _GridWidgetState extends State<GridWidget> {
 
+  
+
   @override
   Widget build(BuildContext context) {
+
+    final grid = FittedBox(
+      child: SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: CustomPaint(
+          painter: GridPainter(widget.rows, widget.columns, widget.unitSize, widget.width, widget.height, context)
+        ),
+      ),
+    );
     print("grid built");
     return Stack(
       children: <Widget>[
-        FittedBox(
-          child: SizedBox(
-            width: widget.width,
-            height: widget.height,
-            child: Consumer<Grid>(
-              builder: (_,grid,__){
-                return CustomPaint(
-                  painter: GridPainter(widget.rows, widget.columns, widget.unitSize, widget.width, widget.height, context, grid.scale)
-                );
-              },
-            ),
-          ),
+        grid,
+        Consumer<Grid>(
+          builder: (_,grid,__) {
+            return CustomPaint(
+              painter: StaticNodePainter(grid.staticNodes,widget.unitSize)
+            );
+          },
         ),
         Consumer<Grid>(
           builder: (_,grid,__) {
             return CustomPaint(
-              painter: StaticNodePainter(grid.staticNodes)
+              painter: StaticNodePainter(grid.staticShortPathNode,widget.unitSize)
             );
           },
         ),
@@ -424,19 +466,29 @@ class _GridWidgetState extends State<GridWidget> {
 }
 
 class StaticNodePainter extends CustomPainter {
-  StaticNodePainter(this.staticNodes);
-  List<List<Rect>> staticNodes;
+  StaticNodePainter(this.staticNodes, this.unitSize);
+  List<List<Color>> staticNodes;
+  final double unitSize;
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
 
-    paint.color = Colors.grey.shade900;
+    for (var i = 0; i < staticNodes.length; i++) {
+      for (var j = 0; j < staticNodes[0].length; j++) {
+        if (staticNodes[i][j] != null) {
+          canvas.drawRect(
+            Rect.fromLTWH((unitSize +1) * i, (unitSize +1) * j, unitSize + 2, unitSize + 2), 
+            paint..color = staticNodes[i][j]
+          );
+        }
+      }
+    }
     
-    staticNodes
-      .expand((row) => row)
-      .toList()
-      .where((rect) => rect != null)
-      .forEach((rect) => canvas.drawRect(rect, paint));
+    // staticNodes
+    //   .expand((row) => row)
+    //   .toList()
+    //   .where((rect) => rect != null)
+    //   .forEach((rect) => canvas.drawRect(rect, paint));
   }
 
   @override
@@ -446,8 +498,7 @@ class StaticNodePainter extends CustomPainter {
 } 
 
 class GridPainter extends CustomPainter {
-  GridPainter(this.rows, this.columns, this.unitSize, this.width, this.height, this.context, this.scale);
-  final double scale;
+  const GridPainter(this.rows, this.columns, this.unitSize, this.width, this.height, this.context);
   final BuildContext context;
   final int rows;
   final int columns;
@@ -464,7 +515,7 @@ class GridPainter extends CustomPainter {
     canvas.drawRect(background, paint);
 
     paint.color = Theme.of(context).primaryColor;
-    paint.strokeWidth = 1/scale * 1;
+    paint.strokeWidth = 1;
 
     for (var i = 0; i < rows+1; i++) {
       canvas.drawLine(
@@ -482,4 +533,40 @@ class GridPainter extends CustomPainter {
   }
   @override
   bool shouldRepaint(GridPainter oldDelegate) => false;
+}
+
+class PathExample extends StatelessWidget {
+  PathExample(this.currentNode, this.unitSize);
+  final double unitSize;
+  final Node currentNode;
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: PathPainter(currentNode, unitSize),
+    );
+  }
+}
+
+class PathPainter extends CustomPainter {
+  PathPainter(this.currentNode, this.unitSize);
+  final double unitSize;
+  Node currentNode;
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = unitSize/4;
+
+    Path path = Path();
+    path.moveTo(unitSize + currentNode.i * unitSize, unitSize + currentNode.j * unitSize);
+    while (currentNode.parent != null) {
+      path.lineTo(unitSize + currentNode.i * unitSize, unitSize + currentNode.j * unitSize);
+      currentNode = currentNode.parent;
+    }
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }

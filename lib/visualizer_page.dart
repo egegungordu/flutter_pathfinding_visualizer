@@ -85,9 +85,10 @@ class _VisualizerState extends State<Visualizer> {
 
   bool drawTool = true;
   
-  Grid grid = Grid(35, 50, 50, 5,5, 10,10);
+  Grid grid = Grid(70, 100, 50, 5,5, 10,10);
 
   double brushSize = 0.1;
+
 
   @override
   initState(){
@@ -209,7 +210,7 @@ class _VisualizerState extends State<Visualizer> {
                   grid.addNode(i, j, Brush.open);
                 },
                 onDrawPath: (Node lastNode) {
-                  // grid.drawPath(lastNode);
+                  grid.drawPath(lastNode);
                 },
                 onFinished: () {
                   setState(() {
@@ -218,12 +219,6 @@ class _VisualizerState extends State<Visualizer> {
                   enableBottomButtons();
                 }
               );
-              // Timer(Duration(milliseconds: 5000), (){
-              //   setState(() {
-              //     _color6 = Colors.lightGreen[500];
-              //   });
-              //   enableBottomButtons();
-              // });
             },
             items: <AnimatedButtonPopUpItem>[
               AnimatedButtonPopUpItem(
@@ -421,40 +416,46 @@ class _VisualizerState extends State<Visualizer> {
           ),
         ),
       ),
-      body: Consumer<PopUpModel>(
-        builder: (_,model,__){
-          return grid.gridWidget(
-            onTapNode: (i,j) {
-              grid.clearPaths();
-              if (drawTool) {
-                if (model.selectedBrush == Brush.wall) {
-                  grid.addNode(i, j, Brush.wall);
-                }else{
-                  grid.hoverSpecialNode(i, j, model.selectedBrush);
-                }
-              }else{
-                grid.removeNode(i, j, 1);
-              }
+      body: Stack(
+        children: <Widget>[
+          Consumer<PopUpModel>(
+            builder: (_,model,__){
+              return grid.gridWidget(
+                onTapNode: (i,j) {
+                  grid.clearPaths();
+                  if (drawTool) {
+                    if (model.selectedBrush == Brush.wall) {
+                      grid.addNode(i, j, Brush.wall);
+                    }else{
+                      grid.hoverSpecialNode(i, j, model.selectedBrush);
+                    }
+                  }else{
+                    grid.removeNode(i, j, 1);
+                  }
+                },
+                onDragNode: (i, j, k, l, t) {
+                  if (drawTool) {
+                    if (model.selectedBrush != Brush.wall) {
+                      grid.hoverSpecialNode(k, l,model.selectedBrush);
+                    }else{
+                      grid.addNode(k, l, model.selectedBrush);
+                    }
+                  }else{
+                    grid.removeNode(k, l, 1);
+                  }
+                },
+                onDragNodeEnd: () {
+                  if (model.selectedBrush != Brush.wall && drawTool) {
+                    grid.addSpecialNode(model.selectedBrush);
+                  }
+                },
+                currentNode: model.currentNode
+              );
             },
-            onDragNode: (i, j, k, l, t) {
-              if (drawTool) {
-                if (model.selectedBrush != Brush.wall) {
-                  grid.hoverSpecialNode(k, l,model.selectedBrush);
-                }else{
-                  grid.addNode(k, l, model.selectedBrush);
-                }
-              }else{
-                grid.removeNode(k, l, 1);
-              }
-            },
-            onDragNodeEnd: () {
-              if (model.selectedBrush != Brush.wall && drawTool) {
-                grid.addSpecialNode(model.selectedBrush);
-              }
-            }
-          );
-        },
+          )
+        ],
       ),
     );
   }
 }
+

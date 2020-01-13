@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_2d_grid/2d_grid.dart';
+import 'package:flutter_2d_grid/algorithms.dart';
 
 enum AnimatedButtonPopUpDirection{
   horizontal,
@@ -325,7 +327,16 @@ class _PopUpWidgetState extends State<PopUpWidget> with TickerProviderStateMixin
 }
 
 class PopUpModel extends ChangeNotifier{
-  
+
+  Node _currentNode = Node(0, 0);
+
+  Node get currentNode => _currentNode;
+
+  set currentNode(Node value){
+    _currentNode = value;
+    notifyListeners();
+  }
+
   Color brushColor1 = Colors.orangeAccent;
   Color brushColor2 = Color(0xFF2E2E2E);
   Color brushColor3 = Color(0xFF2E2E2E);

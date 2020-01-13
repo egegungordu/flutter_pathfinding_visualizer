@@ -4,9 +4,9 @@ class WallNodePaintWidget extends StatefulWidget {
   final double unitSize;
   final int i;
   final int j;
-  final Function(int i, int j, Rect rect) callback;
-  final Function(int i, int j) removeNode;
-  WallNodePaintWidget(this.unitSize, this.i, this.j, this.callback, this.removeNode,{Key key}) : super(key:key);
+  final Color color;
+  final Function(int i, int j, Color rect) callback;
+  WallNodePaintWidget({this.unitSize, this.i, this.j, this.callback,Key key, this.color}) : super(key:key);
   @override
   _WallNodePaintWidgetState createState() => _WallNodePaintWidgetState();
 }
@@ -27,9 +27,7 @@ class _WallNodePaintWidgetState extends State<WallNodePaintWidget> with SingleTi
     )
     ..addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        Rect rect = Rect.fromLTWH((widget.unitSize +1) * widget.i, (widget.unitSize +1) * widget.j, widget.unitSize + 2, widget.unitSize + 2);
-        widget.callback(widget.i,widget.j,rect);
-        widget.removeNode(widget.i, widget.j);
+        widget.callback(widget.i,widget.j,widget.color);
       }
     });
 
@@ -49,7 +47,7 @@ class _WallNodePaintWidgetState extends State<WallNodePaintWidget> with SingleTi
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: WallNodePainter(widget.unitSize, fraction)
+      painter: WallNodePainter(widget.unitSize, fraction, widget.color)
     );
   }
 
@@ -62,9 +60,10 @@ class _WallNodePaintWidgetState extends State<WallNodePaintWidget> with SingleTi
 
 
 abstract class NodePainter extends CustomPainter{
-  NodePainter(this.unitSize, this.fraction);
+  NodePainter(this.unitSize, this.fraction, this.color);
   double fraction;
   double unitSize;
+  Color color;
 
   @override
   bool shouldRepaint(NodePainter oldDelegate) {
@@ -73,7 +72,7 @@ abstract class NodePainter extends CustomPainter{
 }
 
 class WallNodePainter extends NodePainter{
-  WallNodePainter(double unitSize, double fraction) : super(unitSize, fraction);
+  WallNodePainter(double unitSize, double fraction, Color color) : super(unitSize, fraction,color);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -82,8 +81,8 @@ class WallNodePainter extends NodePainter{
       width: fraction * (unitSize + 2),
       height: fraction * (unitSize + 2),
       );
-    Paint paint = Paint();
-    paint.color = Colors.grey.shade900;
+    Paint paint = Paint()
+      ..color = color;
     canvas.drawRect(rectl, paint);
   }
 }
@@ -93,7 +92,8 @@ class NodeImageWidget extends StatefulWidget {
 
   final double boxSize;
   final String asset;
-  NodeImageWidget(this.boxSize, this.asset);
+  // final Function(Image img) callback;
+  NodeImageWidget(this.boxSize, this.asset,); //this.callback);
   @override
   _NodeImageWidgetState createState() => _NodeImageWidgetState();
 }
@@ -111,8 +111,14 @@ class _NodeImageWidgetState extends State<NodeImageWidget> with SingleTickerProv
       animationBehavior: AnimationBehavior.preserve,
       duration: const Duration(milliseconds: 500),
       vsync: this,
-    );
-
+    )
+    // ..addStatusListener((status) {
+    //   if (status == AnimationStatus.completed) {
+    //     Image img = Image.asset(widget.asset, width: widget.boxSize, height: widget.boxSize,);
+    //     widget.callback(img);
+    //   }
+    // });
+    ;
     animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
       parent: controller,
       curve: Curves.elasticOut
@@ -141,14 +147,18 @@ class _NodeImageWidgetState extends State<NodeImageWidget> with SingleTickerProv
 }
 
 
-class ClosedNodePaintWidget extends StatefulWidget {
-  final double boxSize;
-  ClosedNodePaintWidget(this.boxSize, {Key key}) : super(key:key);
+class VisitedNodePaintWidget extends StatefulWidget {
+  final double unitSize;
+  final int i;
+  final int j;
+  final Color color;
+  final Function(int i, int j, Color color) callback;
+  VisitedNodePaintWidget({this.unitSize, Key key, this.i, this.j, this.callback, this.color}) : super(key:key);
   @override
-  _ClosedNodePaintWidgetState createState() => _ClosedNodePaintWidgetState();
+  _VisitedNodePaintWidgetState createState() => _VisitedNodePaintWidgetState();
 }
 
-class _ClosedNodePaintWidgetState extends State<ClosedNodePaintWidget> with SingleTickerProviderStateMixin{
+class _VisitedNodePaintWidgetState extends State<VisitedNodePaintWidget> with SingleTickerProviderStateMixin{
 
   double fraction = 0;
   Animation<double> animation;
@@ -161,7 +171,12 @@ class _ClosedNodePaintWidgetState extends State<ClosedNodePaintWidget> with Sing
       animationBehavior: AnimationBehavior.preserve,
       duration: const Duration(milliseconds: 500),
       vsync: this,
-    );
+    )
+    ..addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        widget.callback(widget.i,widget.j,widget.color);
+      }
+    });
 
     animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
       parent: controller,
@@ -179,7 +194,7 @@ class _ClosedNodePaintWidgetState extends State<ClosedNodePaintWidget> with Sing
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: ClosedNodePainter(widget.boxSize, fraction)
+      painter: VisitedNodePainter(widget.unitSize, fraction, widget.color)
     );
   }
 
@@ -190,58 +205,8 @@ class _ClosedNodePaintWidgetState extends State<ClosedNodePaintWidget> with Sing
   }
 }
 
-class OpenNodePaintWidget extends StatefulWidget {
-  final double boxSize;
-  OpenNodePaintWidget(this.boxSize, {Key key}) : super(key:key);
-  @override
-  _OpenNodePaintWidgetState createState() => _OpenNodePaintWidgetState();
-}
-
-
-class _OpenNodePaintWidgetState extends State<OpenNodePaintWidget> with SingleTickerProviderStateMixin{
-
-  double fraction = 0;
-  Animation<double> animation;
-  AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(
-      animationBehavior: AnimationBehavior.preserve,
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-
-    animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-      parent: controller,
-      curve: Curves.easeInToLinear
-    ))
-    ..addListener((){
-      setState(() {
-        fraction = animation.value;
-      });
-    });
-
-    controller.forward();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: OpenNodePainter(widget.boxSize, fraction)
-    );
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-}
-
-class OpenNodePainter extends NodePainter{
-  OpenNodePainter(double unitSize, double fraction) : super(unitSize, fraction);
+class VisitedNodePainter extends NodePainter{
+  VisitedNodePainter(double unitSize, double fraction, Color color) : super(unitSize, fraction, color);
   
   @override
   void paint(Canvas canvas, Size size) {
@@ -251,27 +216,8 @@ class OpenNodePainter extends NodePainter{
       height: fraction * (unitSize + 2),
     );
     var rrect = RRect.fromRectAndRadius(rect, Radius.circular((1-fraction)*100));
-    Paint paint = Paint();
-    paint.color = Colors.cyan.withOpacity(0.5);
+    Paint paint = Paint()
+      ..color = color;
     canvas.drawRRect(rrect, paint);
   }
 }
-
-
-class ClosedNodePainter extends NodePainter{
-  ClosedNodePainter(double unitSize, double fraction) : super(unitSize, fraction);
-  
-  @override
-  void paint(Canvas canvas, Size size) {
-    var rect = Rect.fromCenter(
-      center: Offset(unitSize/2,unitSize/2),
-      width: fraction * (unitSize + 2),
-      height: fraction * (unitSize + 2),
-    );
-    var rrect = RRect.fromRectAndRadius(rect, Radius.circular((1-fraction)*100));
-    Paint paint = Paint();
-    paint.color = Colors.red.withOpacity(0.5);
-    canvas.drawRRect(rrect, paint);
-  }
-}
-

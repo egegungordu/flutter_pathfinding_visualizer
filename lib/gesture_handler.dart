@@ -35,8 +35,8 @@ class GridGestureDetector extends StatefulWidget {
 
 class _GridGestureDetectorState extends State<GridGestureDetector> {
 
-  int i;
-  int j;
+  int i = 0;
+  int j = 0;
 
   int snapToGrid(double gridSize, double position, int maxSize){
     var numb = position/gridSize;
@@ -54,6 +54,10 @@ class _GridGestureDetectorState extends State<GridGestureDetector> {
     }
     i = newi;
     j = newj;
+  }
+
+  void oldUpdate(){
+    widget.onTapNode(i,j);
   }
 
   void tapUpdate(var details){
