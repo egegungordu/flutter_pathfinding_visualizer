@@ -221,6 +221,9 @@ class _PopUpWidgetState extends State<PopUpWidget> with TickerProviderStateMixin
     return IgnorePointer(
       ignoring: ignore,
       child: GestureDetector(
+        onPanCancel: (){
+          print('object');
+        },
         behavior: HitTestBehavior.opaque,
         onTapDown: (details) {
           if (details.localPosition.dx < widget.offset.dx || details.localPosition.dx > widget.offset.dx + widget.width

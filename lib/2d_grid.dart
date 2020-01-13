@@ -34,7 +34,9 @@ enum VisualizerAlgorithm{
 enum Brush{
   wall,
   start,
-  finish
+  finish,
+  closed,
+  open
 }
 
 class Grid extends ChangeNotifier{
@@ -108,6 +110,16 @@ class Grid extends ChangeNotifier{
     notifyListeners();
   }
 
+  void clearPaths(){
+    //nodeTypes.forEach((f) => f.where((f) => f == 4 || f == 5).forEach((f) => 0));
+    for (var i = 0; i < nodeTypes.length; i++) {
+      for (var j = 0; j < nodeTypes[0].length; j++) {
+        removePath(i, j);
+        removePath(i, j);
+      }
+    }
+  }
+
   void addNodeWidgetOnly(int i, int j, Brush type){
     switch (type) {
       case Brush.start:
@@ -135,7 +147,7 @@ class Grid extends ChangeNotifier{
     if(boundaryCheckFailed(i, j)){
       return;
     }
-    if(nodeTypes[i][j] == 0){
+    if(nodeTypes[i][j] == 0 || nodeTypes[i][j] == 4 || nodeTypes[i][j] == 5){
       switch (type) {
         case Brush.wall:
           nodeTypes[i][j] = 1;
@@ -169,6 +181,26 @@ class Grid extends ChangeNotifier{
             child: NodeImageWidget(unitSize, "assets/images/end_node.png")
           );
           break;
+        case Brush.open:
+        nodeTypes[i][j] = 4;
+          nodes[i][j] = Positioned(
+            key: UniqueKey(),
+            left: 0.50 + i * (unitSize.toDouble() + 1),
+            top: 0.50 + j * (unitSize.toDouble() + 1),
+            child: OpenNodePaintWidget(unitSize)
+          );
+          break;
+        case Brush.closed:
+        nodeTypes[i][j] = 5;
+          nodes[i][j] = Positioned(
+            key: UniqueKey(),
+            left: 0.50 + i * (unitSize.toDouble() + 1),
+            top: 0.50 + j * (unitSize.toDouble() + 1),
+            child: ClosedNodePaintWidget(unitSize)
+          );
+          break;
+          
+        default:
       }
       notifyListeners();
     }else if (nodeTypes[i][j] == 1 && (type == Brush.start || type == Brush.finish)) {
@@ -221,13 +253,25 @@ class Grid extends ChangeNotifier{
     }
   }
 
+  void removePath(int i, int j){
+    if(boundaryCheckFailed(i, j)){
+      return;
+    }
+    if (nodeTypes[i][j] == 4 || nodeTypes[i][j] == 5) {
+      staticNodes[i][j] = null;
+      nodeTypes[i][j] = 0;
+      nodes[i][j] = null;
+      notifyListeners();
+    }
+  }
+
 
   void generateBoard({@required GridGenerationFunction function, @required Function onFinished}){
     int i = 0;
     int j = 0;
     switch (function) {
       case GridGenerationFunction.random:
-        Timer.periodic(Duration(microseconds: 1), (timer) {
+        Timer.periodic(Duration(microseconds: 1000), (timer) {
           removeNode(i, j, 1);
           if (Random().nextDouble() < 0.3) {
             addNode(i, j, Brush.wall);
@@ -295,7 +339,8 @@ class Grid extends ChangeNotifier{
   void clearBoard({Function onFinished}){
     int i = 0;
     int j = 0;
-    Timer.periodic(Duration(microseconds: 1), (timer) {
+    clearPaths();
+    Timer.periodic(Duration(microseconds: 1000), (timer) {
       removeNode(i, j, 1);
       i++;
       if (i == nodeTypes.length) {

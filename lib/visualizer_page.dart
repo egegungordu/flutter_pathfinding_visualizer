@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_2d_grid/2d_grid.dart';
+import 'package:flutter_2d_grid/algorithms.dart';
 import 'package:flutter_2d_grid/animated_button_popup.dart';
 import 'package:flutter_2d_grid/fab_with_popup.dart';
 import 'package:provider/provider.dart';
@@ -14,8 +15,6 @@ class Visualizer extends StatefulWidget {
 class _VisualizerState extends State<Visualizer> {
 
   bool isRunning = false;
-  List<String> algorithms = ["Maze","Random","Recursive"];
-  String selectedAlg = "Maze";
 
   void setActiveButton(int i){
     switch (i) {
@@ -195,12 +194,36 @@ class _VisualizerState extends State<Visualizer> {
                 _color6 = Colors.redAccent;
               });
               disableBottomButtons();
-              Timer(Duration(milliseconds: 5000), (){
-                setState(() {
-                  _color6 = Colors.lightGreen[500];
-                });
-                enableBottomButtons();
-              });
+              grid.clearPaths();
+              PathfindAlgorithms.visualize(
+                algorithm: model.selectedPathAlg,
+                gridd: grid.nodeTypes,
+                starti: grid.starti,
+                startj: grid.startj,
+                finishi: grid.finishi,
+                finishj: grid.finishj,
+                onShowClosedNode: (int i, int j){
+                  grid.addNode(i, j, Brush.closed);
+                },
+                onShowOpenNode: (int i, int j) {
+                  grid.addNode(i, j, Brush.open);
+                },
+                onDrawPath: (Node lastNode) {
+                  // grid.drawPath(lastNode);
+                },
+                onFinished: () {
+                  setState(() {
+                    _color6 = Colors.lightGreen[500];
+                  });
+                  enableBottomButtons();
+                }
+              );
+              // Timer(Duration(milliseconds: 5000), (){
+              //   setState(() {
+              //     _color6 = Colors.lightGreen[500];
+              //   });
+              //   enableBottomButtons();
+              // });
             },
             items: <AnimatedButtonPopUpItem>[
               AnimatedButtonPopUpItem(
@@ -402,6 +425,7 @@ class _VisualizerState extends State<Visualizer> {
         builder: (_,model,__){
           return grid.gridWidget(
             onTapNode: (i,j) {
+              grid.clearPaths();
               if (drawTool) {
                 if (model.selectedBrush == Brush.wall) {
                   grid.addNode(i, j, Brush.wall);
