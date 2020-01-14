@@ -69,13 +69,11 @@ class PathfindAlgorithms{
     int finishj,
     Function(int i, int j) onShowClosedNode, 
     Function(int i, int j) onShowOpenNode,
-    Function(Node lastNode) onDrawPath,
-    Function onFinished}){
+    bool Function(Node lastNode, int count) onDrawPath,
+    Function() onFinished}){
 
     List<Node> openSet = <Node>[];
     List<Node> closedSet = <Node>[];
-    
-    bool stop = false;
 
     endi = finishi;
     endj = finishj;
@@ -91,10 +89,9 @@ class PathfindAlgorithms{
     startNode.f = startNode.g + startNode.h;
     openSet.add(startNode);
 
-    Timer.periodic(Duration(milliseconds: 0), (timer){
-      if (stop) {
-        timer.cancel();
-      }
+    int c = 0;
+
+    Timer.periodic(Duration(milliseconds: 5), (timer){
       if (openSet.isNotEmpty) {
         int smallest = 0;
         for (int i = 0; i < openSet.length; ++i) {
@@ -103,38 +100,37 @@ class PathfindAlgorithms{
           }
         }
         Node currentNode = openSet[smallest];
-        onDrawPath(currentNode);
-
-        if (currentNode.i == endi && currentNode.j == endj) {
-          onFinished();
-          onDrawPath(currentNode);
+        if(onDrawPath(currentNode, c)){
           timer.cancel();
         }
+        // if (currentNode.i == endi && currentNode.j == endj) {
+        //   onFinished(c);
+        //   onDrawPath(currentNode, c);
+        //   timer.cancel();
+        // }
 
         openSet.remove(currentNode);
-        closedSet.add(currentNode);
-        onShowClosedNode(currentNode.i,currentNode.j);
 
         for (Node neighbor in currentNode.neighbors) {
-          if (neighbor.i == endi && neighbor.j == endj) {
-            onFinished();
-            onDrawPath(currentNode);
-            timer.cancel();
-          }
-          if (stop) {
-            timer.cancel();
-          }
           double tentativeGScore = currentNode.g + distance(currentNode.i,currentNode.j,neighbor.i,neighbor.j);
           if (!closedSet.contains(neighbor) && (!openSet.contains(neighbor) || tentativeGScore < neighbor.g)) {
+            c++;
             neighbor.parent = currentNode;
             neighbor.g = tentativeGScore;
             neighbor.f = neighbor.g + neighbor.h;
+            if (neighbor.i == endi && neighbor.j == endj) {
+              onFinished();
+              onDrawPath(neighbor, c);
+              timer.cancel();
+            }
             if (!openSet.contains(neighbor)) {
               openSet.add(neighbor);
               onShowOpenNode(neighbor.i,neighbor.j);
             }
           }
         } 
+        closedSet.add(currentNode);
+        onShowClosedNode(currentNode.i,currentNode.j);
       }else{
         onFinished();
         timer.cancel();
@@ -143,22 +139,24 @@ class PathfindAlgorithms{
   }
 }
 
-double d1 = 1;
-double d2 = math.sqrt2;
+const double d1 = 1;
+const double d2 = math.sqrt2;
 
 double heuristic(int i, int j){
   var dx = (i-endi).abs();
   var dy = (j-endj).abs();
   //return d1 * (dx + dy);
-  return d1 * math.max(dx,dy) + (d2-d1) * math.min(dx, dy);
+  //return math.sqrt(dx *dx + dy * dy);
+  return d1 * (dx + dy) + (d2 - 2 * d1) * math.min(dx, dy);
   // return math.sqrt(math.pow((i-endi), 2) + math.pow((j-endj), 2)).toDouble();
 }
 
 double distance(int i, int j, int k, int l){
   var dx = (i-k).abs();
   var dy = (j-l).abs();
+  //return math.sqrt(dx *dx + dy * dy);
   //return d1 * (dx + dy);
-  return d1 * math.max(dx,dy) + (d2-d1) * math.min(dx, dy);
+  return d1 * (dx + dy) + (d2 - 2 * d1) * math.min(dx, dy);
   // var a = (i - k).abs();
   // var b = (j - l).abs();
   // if (a + b == 1) {

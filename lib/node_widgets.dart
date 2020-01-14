@@ -169,7 +169,7 @@ class _VisitedNodePaintWidgetState extends State<VisitedNodePaintWidget> with Si
     super.initState();
     controller = AnimationController(
       animationBehavior: AnimationBehavior.preserve,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 200),
       vsync: this,
     )
     ..addStatusListener((status) {

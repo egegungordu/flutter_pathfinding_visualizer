@@ -223,9 +223,6 @@ class _PopUpWidgetState extends State<PopUpWidget> with TickerProviderStateMixin
     return IgnorePointer(
       ignoring: ignore,
       child: GestureDetector(
-        onPanCancel: (){
-          print('object');
-        },
         behavior: HitTestBehavior.opaque,
         onTapDown: (details) {
           if (details.localPosition.dx < widget.offset.dx || details.localPosition.dx > widget.offset.dx + widget.width
@@ -328,12 +325,21 @@ class _PopUpWidgetState extends State<PopUpWidget> with TickerProviderStateMixin
 
 class PopUpModel extends ChangeNotifier{
 
-  Node _currentNode = Node(0, 0);
+  bool _stop = false;
 
-  Node get currentNode => _currentNode;
+  bool get stop => _stop;
 
-  set currentNode(Node value){
-    _currentNode = value;
+  set stop(value){
+    _stop = value;
+    notifyListeners();
+  }
+
+  int _operations = 0;
+
+  int get operations => _operations;
+
+  set operations(value){
+    _operations = value;
     notifyListeners();
   }
 

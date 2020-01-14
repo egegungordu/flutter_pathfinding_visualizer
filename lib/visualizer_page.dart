@@ -85,7 +85,7 @@ class _VisualizerState extends State<Visualizer> {
 
   bool drawTool = true;
   
-  Grid grid = Grid(70, 100, 50, 5,5, 10,10);
+  Grid grid = Grid(35, 50, 50, 5,5, 10,10);
 
   double brushSize = 0.1;
 
@@ -145,6 +145,7 @@ class _VisualizerState extends State<Visualizer> {
 
   @override
   Widget build(BuildContext context) {
+    var popupmodel = Provider.of<PopUpModel>(context,listen: false);
     return Scaffold(
       drawer: drawer(),
       appBar: AppBar(
@@ -190,8 +191,10 @@ class _VisualizerState extends State<Visualizer> {
               ),
             ),
             onPressed: (){
+              model.stop = false;
               setActiveButton(3);
               setState(() {
+                isRunning = true;
                 _color6 = Colors.redAccent;
               });
               disableBottomButtons();
@@ -209,11 +212,21 @@ class _VisualizerState extends State<Visualizer> {
                 onShowOpenNode: (int i, int j) {
                   grid.addNode(i, j, Brush.open);
                 },
-                onDrawPath: (Node lastNode) {
+                onDrawPath: (Node lastNode,int c) {
+                  popupmodel.operations = c;
+                  if(model.stop){
+                    setState(() {
+                      _color6 = Colors.lightGreen[500];
+                    });
+                    enableBottomButtons();
+                    return true;
+                  }
                   grid.drawPath(lastNode);
+                  return false;
                 },
                 onFinished: () {
                   setState(() {
+                    isRunning = false;
                     _color6 = Colors.lightGreen[500];
                   });
                   enableBottomButtons();
@@ -291,15 +304,29 @@ class _VisualizerState extends State<Visualizer> {
                       ),
                     ),
                     onPressed: (){
+                      model.stop = false;
                       setState(() {
                         setActiveButton(3);
+                        isRunning = true;
                         _color5 = Colors.redAccent;
                       });
                       disableBottomButtons();
                       grid.generateBoard(
+                        callback: (){
+                          if (model.stop) {
+                            setState(() {
+                              isRunning = false;
+                              _color5 = Colors.white;
+                            });
+                            enableBottomButtons();
+                            return true;
+                          }
+                          return false;
+                        },
                         function: model.selectedAlg,
                         onFinished: (){
                           setState(() {
+                            isRunning = false;
                             _color5 = Colors.white;
                           });
                           enableBottomButtons();
@@ -394,12 +421,12 @@ class _VisualizerState extends State<Visualizer> {
                 color: _color4,
                 disabled: _disabled4,
                 onPressed: (){
-                  setState(() {
-                    _color4 = Colors.redAccent;
-                    _disabled4 = true;
-                    _disabled5 = true;
-                    _disabled6 = true;
-                  });
+                  // setState(() {
+                  //   _color4 = Colors.redAccent;
+                  //   _disabled4 = true;
+                  //   _disabled5 = true;
+                  //   _disabled6 = true;
+                  // });
                   grid.clearBoard(
                     onFinished: () {
                       setState(() {
@@ -418,16 +445,17 @@ class _VisualizerState extends State<Visualizer> {
       ),
       body: Stack(
         children: <Widget>[
-          Consumer<PopUpModel>(
-            builder: (_,model,__){
+          Selector<PopUpModel, Brush>(
+            selector: (context,model) => model.selectedBrush,
+            builder: (_,brush,__){
               return grid.gridWidget(
                 onTapNode: (i,j) {
                   grid.clearPaths();
                   if (drawTool) {
-                    if (model.selectedBrush == Brush.wall) {
+                    if (brush == Brush.wall) {
                       grid.addNode(i, j, Brush.wall);
                     }else{
-                      grid.hoverSpecialNode(i, j, model.selectedBrush);
+                      grid.hoverSpecialNode(i, j, brush);
                     }
                   }else{
                     grid.removeNode(i, j, 1);
@@ -435,27 +463,52 @@ class _VisualizerState extends State<Visualizer> {
                 },
                 onDragNode: (i, j, k, l, t) {
                   if (drawTool) {
-                    if (model.selectedBrush != Brush.wall) {
-                      grid.hoverSpecialNode(k, l,model.selectedBrush);
+                    if (brush != Brush.wall) {
+                      grid.hoverSpecialNode(k, l,brush);
                     }else{
-                      grid.addNode(k, l, model.selectedBrush);
+                      grid.addNode(k, l, brush);
                     }
                   }else{
                     grid.removeNode(k, l, 1);
                   }
                 },
                 onDragNodeEnd: () {
-                  if (model.selectedBrush != Brush.wall && drawTool) {
-                    grid.addSpecialNode(model.selectedBrush);
+                  if (brush != Brush.wall && drawTool) {
+                    grid.addSpecialNode(brush);
                   }
                 },
-                currentNode: model.currentNode
               );
             },
-          )
+          ),
+          Positioned(
+            bottom: 5,
+            left: 5,
+            child: Selector<PopUpModel, int>(
+              selector: (context, model) => model.operations,
+              builder: (_,operations,__){
+                return Text('Operations: ${operations.toString()}');
+              }
+            ),
+          ),
+          AnimatedPositioned(
+            left: MediaQuery.of(context).size.width/2-23,
+            bottom: isRunning ? 15 : -50,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.elasticOut,
+            child: FloatingActionButton(
+              backgroundColor: Colors.red,
+              child: Icon(Icons.pause,color:Colors.black),
+              mini: true,
+              onPressed: (){
+                setState(() {
+                  isRunning = false;
+                });
+                popupmodel.stop = true;
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 }
-

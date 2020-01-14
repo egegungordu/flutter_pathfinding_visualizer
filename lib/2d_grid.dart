@@ -80,8 +80,7 @@ class Grid extends ChangeNotifier{
     Function(int i, int j) onTapNode, 
     Function(int i, int j, int k , int l, int type) onDragNode, 
     Function(double scale, double zoom) onScaleUpdate,
-    Function onDragNodeEnd,
-    Node currentNode}){
+    Function onDragNodeEnd}){
     return ChangeNotifierProvider.value(
       value: this,
       child: GridGestureDetector(
@@ -266,6 +265,7 @@ class Grid extends ChangeNotifier{
       staticShortPathNode[currentNode.i][currentNode.j] = Colors.amber;
       currentNode = currentNode.parent;
     }
+    staticShortPathNode[currentNode.i][currentNode.j] = Colors.amber;
     notifyListeners();
   }
 
@@ -300,13 +300,16 @@ class Grid extends ChangeNotifier{
   }
 
 
-  void generateBoard({@required GridGenerationFunction function, @required Function onFinished}){
+  void generateBoard({@required GridGenerationFunction function, @required Function onFinished,  @required Function callback}){
     int i = 0;
     int j = 0;
     clearPaths();
     switch (function) {
       case GridGenerationFunction.random:
         Timer.periodic(Duration(microseconds: 10), (timer) {
+          if (callback()) {
+            timer.cancel();
+          }
           removeNode(i, j, 1);
           if (Random().nextDouble() < 0.3) {
             addNode(i, j, Brush.wall);
@@ -375,18 +378,23 @@ class Grid extends ChangeNotifier{
     int i = 0;
     int j = 0;
     clearPaths();
-    Timer.periodic(Duration(microseconds: 1000), (timer) {
-      removeNode(i, j, 1);
-      i++;
-      if (i == nodeTypes.length) {
-        i = 0;
-        j++;
+    for (var i = 0; i < nodeTypes.length; i++) {
+      for (var j = 0; j < nodeTypes[0].length; j++) {
+        removeNode(i, j, 1);
       }
-      if (j == nodeTypes[0].length) {
-        onFinished();
-        timer.cancel();
-      }
-    });
+    }
+    // Timer.periodic(Duration(microseconds: 1000), (timer) {
+    //   removeNode(i, j, 1);
+    //   i++;
+    //   if (i == nodeTypes.length) {
+    //     i = 0;
+    //     j++;
+    //   }
+    //   if (j == nodeTypes[0].length) {
+    //     onFinished();
+    //     timer.cancel();
+    //   }
+    // });
   }
 
   bool get isPanning => _isPanning;
@@ -415,8 +423,6 @@ class GridWidget extends StatefulWidget {
 }
 
 class _GridWidgetState extends State<GridWidget> {
-
-  
 
   @override
   Widget build(BuildContext context) {
