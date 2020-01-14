@@ -149,6 +149,7 @@ class _VisualizerState extends State<Visualizer> {
     return Scaffold(
       drawer: drawer(),
       appBar: AppBar(
+        brightness: Brightness.light, 
         backgroundColor: Colors.white,
         title: Text("Pathfinding Visualizer",style: TextStyle(color: Colors.black),),
         iconTheme: IconThemeData(color: Color(0xFF494964)),
