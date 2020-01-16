@@ -449,13 +449,6 @@ class _GridWidgetState extends State<GridWidget> {
         ),
         Consumer<Grid>(
           builder: (_,grid,__) {
-            return CustomPaint(
-              painter: StaticNodePainter(grid.staticShortPathNode,widget.unitSize)
-            );
-          },
-        ),
-        Consumer<Grid>(
-          builder: (_,grid,__) {
             return Stack(
               children: <Widget>[
                 ...grid.nodes
@@ -463,6 +456,13 @@ class _GridWidgetState extends State<GridWidget> {
                     .toList()
                     .where((w) => w != null)
               ],
+            );
+          },
+        ),
+        Consumer<Grid>(
+          builder: (_,grid,__) {
+            return CustomPaint(
+              painter: StaticNodePainter(grid.staticShortPathNode,widget.unitSize)
             );
           },
         ),

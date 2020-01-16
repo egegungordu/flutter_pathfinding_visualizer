@@ -89,7 +89,6 @@ class _VisualizerState extends State<Visualizer> {
 
   double brushSize = 0.1;
 
-
   @override
   initState(){
     super.initState();
@@ -203,8 +202,8 @@ class _VisualizerState extends State<Visualizer> {
               PathfindAlgorithms.visualize(
                 algorithm: model.selectedPathAlg,
                 gridd: grid.nodeTypes,
-                starti: grid.starti,
-                startj: grid.startj,
+                startti: grid.starti,
+                starttj: grid.startj,
                 finishi: grid.finishi,
                 finishj: grid.finishj,
                 onShowClosedNode: (int i, int j){
@@ -212,6 +211,9 @@ class _VisualizerState extends State<Visualizer> {
                 },
                 onShowOpenNode: (int i, int j) {
                   grid.addNode(i, j, Brush.open);
+                },
+                speed: (){
+                  return model.speed;
                 },
                 onDrawPath: (Node lastNode,int c) {
                   popupmodel.operations = c;
@@ -275,7 +277,7 @@ class _VisualizerState extends State<Visualizer> {
               Consumer<PopUpModel>(
                 builder: (_,model,__) {
                   return AnimatedButtonWithPopUp(
-                    width: 150,
+                    width: 130,
                     direction: AnimatedButtonPopUpDirection.vertical,
                     child: RichText(
                       textAlign: TextAlign.center,
@@ -487,7 +489,7 @@ class _VisualizerState extends State<Visualizer> {
             child: Selector<PopUpModel, int>(
               selector: (context, model) => model.operations,
               builder: (_,operations,__){
-                return Text('Operations: ${operations.toString()}');
+                return Text('Operations: ${operations.toString()}',style: TextStyle(backgroundColor: Colors.white.withOpacity(0.6)),);
               }
             ),
           ),
@@ -508,6 +510,96 @@ class _VisualizerState extends State<Visualizer> {
               },
             ),
           ),
+          AnimatedPositioned(
+            duration: Duration(milliseconds: 250),
+            right: 0,
+            bottom: 90,
+            child: Row(
+              children: <Widget>[
+                // Container(
+                //   width: 30,
+                //   height: 40,
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.horizontal(left: Radius.circular(30)),
+                //     boxShadow: [
+                //       BoxShadow(
+                //         blurRadius: 20,
+                //         spreadRadius: -5
+                //       )
+                //     ]
+                //   ),
+                // ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 20,
+                        spreadRadius: -5
+                      )
+                    ]
+                  ),
+                  child: Selector<PopUpModel,int>(
+                    selector: (context,model) => model.speed,
+                    builder: (_,speed,__){
+                      return Column(
+                        children: <Widget>[
+                          Container(
+                            height: 290,
+                            child: RotatedBox(
+                              quarterTurns: -1,
+                              child: Slider.adaptive(
+                                activeColor: Colors.lightBlue,
+                                // label: ((){
+                                //   switch (speed) {
+                                //     case 400:
+                                //       return "Slow";
+                                //       break;
+                                //     case 10:
+                                //       return "Fast";
+                                //       break;
+                                //     default:
+                                //       return "Medium";
+                                //   }
+                                // }()),
+                                min: 10,
+                                max: 400,
+                                divisions: 2,
+                                value: speed.toDouble() * -1 + 410,
+                                onChanged: (val){
+                                  popupmodel.speed = val.toInt() * -1 + 410;
+                                },
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 15),
+                            child: Text(
+                              ((){
+                                switch (speed) {
+                                  case 400:
+                                    return "Slow";
+                                    break;
+                                  case 10:
+                                    return "Fast";
+                                    break;
+                                  default:
+                                    return "Avrg";
+                                }
+                              }()),
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          )
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );

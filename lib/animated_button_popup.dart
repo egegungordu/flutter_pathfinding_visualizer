@@ -325,6 +325,15 @@ class _PopUpWidgetState extends State<PopUpWidget> with TickerProviderStateMixin
 
 class PopUpModel extends ChangeNotifier{
 
+  int _speed = 10;
+
+  int get speed => _speed;
+
+  set speed(value){
+    _speed = value;
+    notifyListeners();
+  }
+
   bool _stop = false;
 
   bool get stop => _stop;
