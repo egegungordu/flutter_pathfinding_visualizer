@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_2d_grid/animated_button_popup.dart';
-import 'package:flutter_2d_grid/visualizer_page.dart';
+import 'package:flutter_2d_grid/home_page.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  bool firstTime = true;
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
               brightness: brightness,
             ),
             home: Scaffold(
-              body: Visualizer()
+              body: HomePage()
             )
           );
         },
