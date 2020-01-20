@@ -10,13 +10,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: PopUpModel(),
-      child: MaterialApp(
-        theme: ThemeData(
-          buttonTheme: ButtonThemeData(minWidth: 50, height: 50)
-        ),
-        home: Scaffold(
-          body: Visualizer()
-        )
+      child: Selector<PopUpModel,Brightness>(
+        selector: (context, model) => model.brightness,
+        builder: (_,brightness,__){
+          return  MaterialApp(
+            theme: ThemeData(
+              buttonTheme: ButtonThemeData(minWidth: 50, height: 50),
+              brightness: brightness,
+            ),
+            home: Scaffold(
+              body: Visualizer()
+            )
+          );
+        },
       ),
     );
   }

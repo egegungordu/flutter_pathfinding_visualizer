@@ -325,6 +325,15 @@ class _PopUpWidgetState extends State<PopUpWidget> with TickerProviderStateMixin
 
 class PopUpModel extends ChangeNotifier{
 
+  Brightness _brightness = Brightness.light;
+
+  Brightness get brightness => _brightness;
+
+  set brightness(value){
+    _brightness = value;
+    notifyListeners();
+  }
+
   int _speed = 10;
 
   int get speed => _speed;

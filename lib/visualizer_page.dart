@@ -121,7 +121,7 @@ class _VisualizerState extends State<Visualizer> {
             ),
           ),
           ListTile(
-            leading: Image.asset("assets/images/github_mark.png",scale: 1.8,),
+            leading: Image.asset("assets/images/github_mark.png",scale: 1.8,color: Theme.of(context).iconTheme.color,),
             title: Text('Github Repo'),
             onTap: () {
               _launchURL("https://github.com/egegungordu/flutter_pathfinding_visualizer");
@@ -129,7 +129,7 @@ class _VisualizerState extends State<Visualizer> {
             },
           ),
           ListTile(
-            leading: Image.asset("assets/images/wikipedia_logo.png",scale: 1.8, ),
+            leading: Image.asset("assets/images/wikipedia_logo.png",scale: 1.8, color: Theme.of(context).iconTheme.color,),
             title: Text('Learn more'),
             subtitle: Text("Pathfinding Algorithms wikipedia page"),
             onTap: () {
@@ -148,9 +148,19 @@ class _VisualizerState extends State<Visualizer> {
     return Scaffold(
       drawer: drawer(),
       appBar: AppBar(
-        brightness: Brightness.light, 
-        backgroundColor: Colors.white,
-        title: Text("Pathfinding Visualizer",style: TextStyle(color: Colors.black),),
+        actions: <Widget>[
+          FlatButton.icon(
+            label: Text(''),
+            icon: Icon(Icons.settings),
+            onPressed: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SecondRoute()),
+              );
+            },
+          )
+        ],
+        title: Text("Pathfinding Visualizer"),
         iconTheme: IconThemeData(color: Color(0xFF494964)),
       ),
       floatingActionButton: Consumer<PopUpModel>(
@@ -510,94 +520,73 @@ class _VisualizerState extends State<Visualizer> {
               },
             ),
           ),
-          AnimatedPositioned(
-            duration: Duration(milliseconds: 250),
-            right: 0,
-            bottom: 90,
-            child: Row(
-              children: <Widget>[
-                // Container(
-                //   width: 30,
-                //   height: 40,
-                //   decoration: BoxDecoration(
-                //     color: Colors.white,
-                //     borderRadius: BorderRadius.horizontal(left: Radius.circular(30)),
-                //     boxShadow: [
-                //       BoxShadow(
-                //         blurRadius: 20,
-                //         spreadRadius: -5
-                //       )
-                //     ]
-                //   ),
-                // ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 20,
-                        spreadRadius: -5
-                      )
-                    ]
-                  ),
-                  child: Selector<PopUpModel,int>(
-                    selector: (context,model) => model.speed,
-                    builder: (_,speed,__){
-                      return Column(
-                        children: <Widget>[
-                          Container(
-                            height: 290,
-                            child: RotatedBox(
-                              quarterTurns: -1,
-                              child: Slider.adaptive(
-                                activeColor: Colors.lightBlue,
-                                // label: ((){
-                                //   switch (speed) {
-                                //     case 400:
-                                //       return "Slow";
-                                //       break;
-                                //     case 10:
-                                //       return "Fast";
-                                //       break;
-                                //     default:
-                                //       return "Medium";
-                                //   }
-                                // }()),
-                                min: 10,
-                                max: 400,
-                                divisions: 2,
-                                value: speed.toDouble() * -1 + 410,
-                                onChanged: (val){
-                                  popupmodel.speed = val.toInt() * -1 + 410;
-                                },
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 15),
-                            child: Text(
-                              ((){
-                                switch (speed) {
-                                  case 400:
-                                    return "Slow";
-                                    break;
-                                  case 10:
-                                    return "Fast";
-                                    break;
-                                  default:
-                                    return "Avrg";
-                                }
-                              }()),
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          )
-                        ],
-                      );
+        ],
+      ),
+    );
+  }
+}
+
+class SecondRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var model = Provider.of<PopUpModel>(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Settings"),
+      ),
+      body: ListView(
+        children: <Widget>[
+          ListTile(
+            title: Text('Speed of Algorithms'),
+            subtitle: Text(
+              (){
+                switch (model.speed) {
+                  case 400:
+                    return "Slow";
+                    break;
+                  case 10:
+                    return "Fast";
+                    break;
+                  default:
+                    return "Average";
+                }
+              }()
+            ),
+            trailing: Selector<PopUpModel,int>(
+              selector: (context,model) => model.speed,
+              builder: (_,speed,__){
+                return Container(
+                  width: 200,
+                  child: Slider.adaptive(
+                    activeColor: Colors.lightBlue,
+                    min: 10,
+                    max: 400,
+                    divisions: 2,
+                    value: speed.toDouble() * -1 + 410,
+                    onChanged: (val){
+                      model.speed = val.toInt() * -1 + 410;
                     },
                   ),
-                ),
-              ],
+                );
+              }
+            ),
+          ),
+          ListTile(
+            title: Text('Dark Theme'),
+            trailing: Switch.adaptive(
+              onChanged: (state){
+                if (state) {
+                  model.brightness = Brightness.dark;
+                }else{
+                  model.brightness = Brightness.light;
+                }
+              },
+              value: ((){
+                if (model.brightness == Brightness.light) {
+                  return false;
+                }
+                return true;
+              }()),
             ),
           )
         ],
@@ -605,3 +594,4 @@ class _VisualizerState extends State<Visualizer> {
     );
   }
 }
+

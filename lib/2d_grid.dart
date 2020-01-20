@@ -520,7 +520,7 @@ class GridPainter extends CustomPainter {
     paint.color = Theme.of(context).scaffoldBackgroundColor;
     canvas.drawRect(background, paint);
 
-    paint.color = Theme.of(context).primaryColor;
+    paint.color = Theme.of(context).primaryColorLight;
     paint.strokeWidth = 1;
 
     for (var i = 0; i < rows+1; i++) {
