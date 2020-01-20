@@ -161,7 +161,7 @@ class Grid extends ChangeNotifier{
             left: 0.50 + i * (unitSize.toDouble() + 1),
             top: 0.50 + j * (unitSize.toDouble() + 1),
             child: WallNodePaintWidget(
-              color: Colors.blueGrey.shade900,
+              color: Color(0xff212121),
               unitSize: unitSize,
               i: i,
               j: j,
@@ -197,7 +197,7 @@ class Grid extends ChangeNotifier{
             left: 0.50 + i * (unitSize.toDouble() + 1),
             top: 0.50 + j * (unitSize.toDouble() + 1),
             child: VisitedNodePaintWidget(
-              color: Colors.cyan.withOpacity(0.5),
+              color: Colors.cyan.withOpacity(0.8),
               unitSize: unitSize,
               i: i,
               j: j,
@@ -215,7 +215,7 @@ class Grid extends ChangeNotifier{
             left: 0.50 + i * (unitSize.toDouble() + 1),
             top: 0.50 + j * (unitSize.toDouble() + 1),
             child: VisitedNodePaintWidget(
-              color: Colors.purple.withOpacity(0.5),
+              color: Colors.red.withOpacity(0.8),
               unitSize: unitSize,
               i: i,
               j: j,
@@ -283,7 +283,6 @@ class Grid extends ChangeNotifier{
     }
     staticNodes[i][j] = null;
     if (nodeTypes[i][j] == t) {
-      staticNodes[i][j] = null;
       nodeTypes[i][j] = 0;
       nodes[i][j] = null;
       notifyListeners();

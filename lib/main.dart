@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         builder: (_,brightness,__){
           return  MaterialApp(
             theme: ThemeData(
-              buttonTheme: ButtonThemeData(minWidth: 50, height: 50),
+              primarySwatch: Colors.blueGrey,
               brightness: brightness,
             ),
             home: Scaffold(

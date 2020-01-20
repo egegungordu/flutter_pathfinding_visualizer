@@ -73,9 +73,9 @@ class _GridGestureDetectorState extends State<GridGestureDetector> {
       builder: (_, grid, __) {
         return Zoom(
           scrollWeight: 4,
-          backgroundColor: Colors.white,
-          initZoom: 0.03,
-          centerOnScale: true,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          initZoom: 0.01,
+          centerOnScale: false,
           doubleTapZoom: false,
           width: widget.width,
           height: widget.height,

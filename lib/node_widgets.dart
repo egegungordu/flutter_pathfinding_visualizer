@@ -4,7 +4,7 @@ class WallNodePaintWidget extends StatefulWidget {
   final double unitSize;
   final int i;
   final int j;
-  Color color;
+  final Color color;
   final Function(int i, int j, Color rect) callback;
   WallNodePaintWidget({this.unitSize, this.i, this.j, this.callback,Key key, this.color}) : super(key:key);
   @override
@@ -46,7 +46,6 @@ class _WallNodePaintWidgetState extends State<WallNodePaintWidget> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    widget.color = Theme.of(context).primaryColor;
     return CustomPaint(
       painter: WallNodePainter(widget.unitSize, fraction, widget.color)
     );

@@ -16,32 +16,29 @@ class _VisualizerState extends State<Visualizer> {
 
   bool isRunning = false;
 
-  void setActiveButton(int i){
+  int _selectedButton = 1;
+  bool _generationRunning = false;
+
+  void setActiveButton(int i, BuildContext context){
     switch (i) {
       case 1: //brush
         grid.isPanning = false;
         drawTool = true;
         setState(() {
-          _color1 = Colors.orangeAccent;
-          _color2 = Colors.white;
-          _color3= Colors.white;
+          _selectedButton = 1;
         });
         break;
       case 2: //eraser
         grid.isPanning = false;
         drawTool = false;
         setState(() {
-          _color1 = Colors.white;
-          _color2 = Colors.orangeAccent;
-          _color3= Colors.white;
+          _selectedButton = 2;
         });
         break;
       case 3: // pan
         grid.isPanning = true;
         setState(() {
-          _color1 = Colors.white;
-          _color2 = Colors.white;
-          _color3= Colors.orangeAccent;
+          _selectedButton = 3;
         });
         break;
       default:
@@ -69,11 +66,6 @@ class _VisualizerState extends State<Visualizer> {
     });
   }
 
-  Color _color1 = Colors.orangeAccent;
-  Color _color2 = Colors.white;
-  Color _color3 = Colors.white;
-  Color _color4 = Colors.white;
-  Color _color5 = Colors.white;
   Color _color6 = Colors.lightGreen[500];
 
   bool _disabled1 = false;
@@ -85,13 +77,14 @@ class _VisualizerState extends State<Visualizer> {
 
   bool drawTool = true;
   
-  Grid grid = Grid(35, 50, 50, 5,5, 10,10);
+  Grid grid = Grid(50, 75, 50, 10,10, 40,50);
 
   double brushSize = 0.1;
 
   @override
   initState(){
     super.initState();
+    print("object");
   }
 
   _launchURL(String url) async {
@@ -108,17 +101,7 @@ class _VisualizerState extends State<Visualizer> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: Text('Links',style: TextStyle(fontSize:25,color: Colors.white),),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                colors: <Color>[
-                  Color(0xFF494964),
-                  Colors.indigo,
-                ] 
-              ),
-            ),
+            child: Text('Links',style: TextStyle(fontSize:25,),),
           ),
           ListTile(
             leading: Image.asset("assets/images/github_mark.png",scale: 1.8,color: Theme.of(context).iconTheme.color,),
@@ -151,7 +134,7 @@ class _VisualizerState extends State<Visualizer> {
         actions: <Widget>[
           FlatButton.icon(
             label: Text(''),
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings,color: Colors.white),
             onPressed: (){
               Navigator.push(
                 context,
@@ -161,7 +144,6 @@ class _VisualizerState extends State<Visualizer> {
           )
         ],
         title: Text("Pathfinding Visualizer"),
-        iconTheme: IconThemeData(color: Color(0xFF494964)),
       ),
       floatingActionButton: Consumer<PopUpModel>(
         builder: (_,model,__) {
@@ -202,7 +184,7 @@ class _VisualizerState extends State<Visualizer> {
             ),
             onPressed: (){
               model.stop = false;
-              setActiveButton(3);
+              setActiveButton(3,context);
               setState(() {
                 isRunning = true;
                 _color6 = Colors.redAccent;
@@ -248,25 +230,25 @@ class _VisualizerState extends State<Visualizer> {
             },
             items: <AnimatedButtonPopUpItem>[
               AnimatedButtonPopUpItem(
-                child: Text("A*",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.pAlgColor1),),
+                child: Text("A*",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                 onPressed: () {
                   model.setActivePAlgorithm(1);
                 },
               ),
               AnimatedButtonPopUpItem(
-                child: Text("Dijkstra",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.pAlgColor2),),
+                child: Text("Dijkstra",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                 onPressed: () {
                   model.setActivePAlgorithm(2);
                 },
               ),
               AnimatedButtonPopUpItem(
-                child: Text("DFS",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.pAlgColor3),),
+                child: Text("DFS",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                 onPressed: () {
                   model.setActivePAlgorithm(3);
                 },
               ),
               AnimatedButtonPopUpItem(
-                child: Text("BFS",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.pAlgColor4),),
+                child: Text("BFS",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                 onPressed: () {
                   model.setActivePAlgorithm(4);
                 },
@@ -276,7 +258,7 @@ class _VisualizerState extends State<Visualizer> {
         },
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Color(0xFF494964),
+        color: Theme.of(context).bottomAppBarColor,
         child: Padding(
           padding: const EdgeInsets.all(5.0),
           child: Row(
@@ -293,10 +275,10 @@ class _VisualizerState extends State<Visualizer> {
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         text: "Generate\n",
-                        style: TextStyle(color: Color(0xFF2E2E2E), fontSize: 22, height: 1.0),
+                        style: TextStyle(color: Colors.black,fontSize: 22, height: 1.0),
                         children: [
                           TextSpan(
-                            style: TextStyle(color: Color(0xFF2E2E2E),fontSize: 16),
+                            style: TextStyle(color: Colors.black ,fontSize: 16),
                             text: ((){
                               switch (model.selectedAlg) {
                                 case GridGenerationFunction.maze:
@@ -319,9 +301,9 @@ class _VisualizerState extends State<Visualizer> {
                     onPressed: (){
                       model.stop = false;
                       setState(() {
-                        setActiveButton(3);
+                        setActiveButton(3,context);
                         isRunning = true;
-                        _color5 = Colors.redAccent;
+                        _generationRunning = true;
                       });
                       disableBottomButtons();
                       grid.generateBoard(
@@ -329,7 +311,7 @@ class _VisualizerState extends State<Visualizer> {
                           if (model.stop) {
                             setState(() {
                               isRunning = false;
-                              _color5 = Colors.white;
+                              _generationRunning = false;
                             });
                             enableBottomButtons();
                             return true;
@@ -340,7 +322,7 @@ class _VisualizerState extends State<Visualizer> {
                         onFinished: (){
                           setState(() {
                             isRunning = false;
-                            _color5 = Colors.white;
+                            _generationRunning = false;
                           });
                           enableBottomButtons();
                         }
@@ -349,24 +331,24 @@ class _VisualizerState extends State<Visualizer> {
                     onLongPressed: () {
                     },
                     disabled: _disabled5,
-                    color: _color5,
+                    color: _generationRunning ? Colors.redAccent : Theme.of(context).buttonColor,
                     items: <AnimatedButtonPopUpItem>[
                       AnimatedButtonPopUpItem(
-                        child: Text("Maze",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.algColor1),),
+                        child: Text("Maze",textAlign: TextAlign.center,style: TextStyle(fontSize: 16,)),
                         onPressed: () {
-                          model.setActiveAlgorithm(1);
+                          model.setActiveAlgorithm(1,context);
                         },
                       ),
                       AnimatedButtonPopUpItem(
-                        child: Text("Random",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.algColor2),),
+                        child: Text("Random",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                         onPressed: () {
-                          model.setActiveAlgorithm(2);
+                          model.setActiveAlgorithm(2,context);
                         },
                       ),
                       AnimatedButtonPopUpItem(
-                        child: Text("Recursive",textAlign: TextAlign.center,style: TextStyle(fontSize: 16, color: model.algColor3),),
+                        child: Text("Recursive",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                         onPressed: () {
-                          model.setActiveAlgorithm(3);
+                          model.setActiveAlgorithm(3,context);
                         },
                       )
                     ],
@@ -380,13 +362,13 @@ class _VisualizerState extends State<Visualizer> {
                   direction: AnimatedButtonPopUpDirection.horizontal,
                   child: Image.asset("assets/images/brush.png"),
                   onPressed: (){
-                    setActiveButton(1);
+                    setActiveButton(1,context);
                   },
-                  onLongPressed: () {
-                    setActiveButton(1);
+                  onLongPressed: () { 
+                    setActiveButton(1,context);
                   },
                   disabled: _disabled1,
-                  color: _color1,
+                  color: _selectedButton == 1 ? Colors.orangeAccent : Theme.of(context).buttonColor,
                   items: <AnimatedButtonPopUpItem>[
                      AnimatedButtonPopUpItem(
                       child: Image.asset("assets/images/wall_node.png",color: model.brushColor1, scale: 1.5,),
@@ -414,24 +396,24 @@ class _VisualizerState extends State<Visualizer> {
               AnimatedButtonWithPopUp(
                 child: Image.asset("assets/images/erase.png"),
                 onPressed: (){
-                  setActiveButton(2);
+                  setActiveButton(2,context);
                 },
                 disabled: _disabled2,
-                color: _color2,
+                color: _selectedButton == 2 ? Colors.orangeAccent : Theme.of(context).buttonColor,
               ),
               Container(width: 0,height: 60,),
               AnimatedButtonWithPopUp(
                 child: Image.asset("assets/images/pan.png"),
                 onPressed: (){
-                  setActiveButton(3);
+                  setActiveButton(3,context);
                 },
                 disabled: _disabled3,
-                color: _color3,
+                color: _selectedButton == 3 ? Colors.orangeAccent : Theme.of(context).buttonColor,
               ),
               Container(width: 0,height: 60,),
               AnimatedButtonWithPopUp(
-                child: Icon(Icons.delete,size:35),
-                color: _color4,
+                child: Icon(Icons.delete,size:35,color: Color(0xFF212121),),
+                color: Theme.of(context).buttonColor,
                 disabled: _disabled4,
                 onPressed: (){
                   // setState(() {
@@ -442,12 +424,6 @@ class _VisualizerState extends State<Visualizer> {
                   // });
                   grid.clearBoard(
                     onFinished: () {
-                      setState(() {
-                        _disabled4 = false;
-                        _disabled5 = false;
-                        _disabled6 = false;
-                        _color4 = Colors.white;
-                      });
                     }
                   );
                 },
@@ -499,7 +475,9 @@ class _VisualizerState extends State<Visualizer> {
             child: Selector<PopUpModel, int>(
               selector: (context, model) => model.operations,
               builder: (_,operations,__){
-                return Text('Operations: ${operations.toString()}',style: TextStyle(backgroundColor: Colors.white.withOpacity(0.6)),);
+                return popupmodel.brightness == Brightness.light ? 
+                  Text('Operations: ${operations.toString()}',style: TextStyle(backgroundColor: Colors.white.withOpacity(0.6)),)
+                  :Text('Operations: ${operations.toString()}');
               }
             ),
           ),

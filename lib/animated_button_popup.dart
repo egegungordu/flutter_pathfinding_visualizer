@@ -247,18 +247,10 @@ class _PopUpWidgetState extends State<PopUpWidget> with TickerProviderStateMixin
                   opacity: opacity,
                   child: Container(
                     decoration: BoxDecoration(
+                      color: Theme.of(context).dialogBackgroundColor,
                       boxShadow: [
                         BoxShadow(blurRadius: 15,spreadRadius: -5)
                       ],
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.white,Colors.white
-                          // Color(0xFF494984),
-                          // Color(0xFF2E2E2E),
-                        ]
-                      ),
                       borderRadius: BorderRadius.circular(4),
                       // boxShadow: [
                       //   BoxShadow(
@@ -366,15 +358,8 @@ class PopUpModel extends ChangeNotifier{
   Color brushColor3 = Color(0xFF2E2E2E);
   Brush selectedBrush = Brush.wall;
 
-  Color algColor1 = Colors.orangeAccent;
-  Color algColor2 = Color(0xFF2E2E2E);
-  Color algColor3 = Color(0xFF2E2E2E);
   GridGenerationFunction selectedAlg = GridGenerationFunction.maze;
 
-  Color pAlgColor1 = Colors.lightGreen[500];
-  Color pAlgColor2 = Color(0xFF2E2E2E);
-  Color pAlgColor3 = Color(0xFF2E2E2E);
-  Color pAlgColor4 = Color(0xFF2E2E2E);
   VisualizerAlgorithm selectedPathAlg = VisualizerAlgorithm.astar;
   
   void setActiveBrush(int i){
@@ -404,26 +389,17 @@ class PopUpModel extends ChangeNotifier{
     }
   }
 
-  void setActiveAlgorithm(int i){
+  void setActiveAlgorithm(int i, BuildContext context){
     switch (i) {
       case 1: //maze
-        algColor1 = Colors.orangeAccent;
-        algColor2 = Color(0xFF2E2E2E);
-        algColor3 = Color(0xFF2E2E2E);
         selectedAlg = GridGenerationFunction.maze;
         notifyListeners();
         break;
       case 2: //random
-        algColor1 = Color(0xFF2E2E2E);
-        algColor2 = Colors.orangeAccent;
-        algColor3 = Color(0xFF2E2E2E);
         selectedAlg = GridGenerationFunction.random;
         notifyListeners();
         break;
       case 3: //recursive
-        algColor1 = Color(0xFF2E2E2E);
-        algColor2 = Color(0xFF2E2E2E);
-        algColor3 = Colors.orangeAccent;
         selectedAlg = GridGenerationFunction.recursive;
         notifyListeners();
         break;
@@ -434,34 +410,18 @@ class PopUpModel extends ChangeNotifier{
   void setActivePAlgorithm(int i){
     switch (i) {
       case 1: //astar
-        pAlgColor1 = Colors.lightGreen[500];
-        pAlgColor2 = Color(0xFF2E2E2E);
-        pAlgColor3 = Color(0xFF2E2E2E);
-        pAlgColor4 = Color(0xFF2E2E2E);
         selectedPathAlg = VisualizerAlgorithm.astar;
         notifyListeners();
         break;
       case 2: //dijkstra
-        pAlgColor1 = Color(0xFF2E2E2E);
-        pAlgColor2 = Colors.lightGreen[500];
-        pAlgColor3 = Color(0xFF2E2E2E);
-        pAlgColor4 = Color(0xFF2E2E2E);
         selectedPathAlg = VisualizerAlgorithm.dijkstra;
         notifyListeners();
         break;
       case 3: //dfs
-        pAlgColor1 = Color(0xFF2E2E2E);
-        pAlgColor2 = Color(0xFF2E2E2E);
-        pAlgColor3 = Colors.lightGreen[500];
-        pAlgColor4 = Color(0xFF2E2E2E);
         selectedPathAlg = VisualizerAlgorithm.dfs;
         notifyListeners();
         break;
       case 4: //bfs
-        pAlgColor1 = Color(0xFF2E2E2E);
-        pAlgColor2 = Color(0xFF2E2E2E);
-        pAlgColor3 = Color(0xFF2E2E2E);
-        pAlgColor4 = Colors.lightGreen[500];
         selectedPathAlg = VisualizerAlgorithm.bfs;
         notifyListeners();
         break;
@@ -478,6 +438,10 @@ class AnimatedButtonPopUpItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return child;
+    return Container(
+      width: 170,
+      height: 50,
+      child: Center(child: child)
+    );
   }
 }
