@@ -27,7 +27,7 @@ class _FabWithPopUpState extends State<FabWithPopUp> with SingleTickerProviderSt
     return IgnorePointer(
       ignoring: widget.disabled,
       child: Opacity(
-        opacity: widget.disabled ? 0.7 : 1,
+        opacity: widget.disabled ? 0.5 : 1,
         child: AnimatedContainer(
           width: widget.width,
           height: widget.height,

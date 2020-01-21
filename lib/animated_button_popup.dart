@@ -72,7 +72,7 @@ class _AnimatedButtonWithPopUpState extends State<AnimatedButtonWithPopUp> with 
       child: Padding(
         padding: EdgeInsets.only(top:fraction + 1),
         child: Opacity(
-          opacity: widget.disabled ? 0.7 : 1,
+          opacity: widget.disabled ? 0.5 : 1,
           child: AnimatedContainer(
             width: widget.width,
             height: widget.height,
