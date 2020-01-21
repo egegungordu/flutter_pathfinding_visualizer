@@ -4,6 +4,7 @@ import 'package:flutter_2d_grid/2d_grid.dart';
 import 'package:flutter_2d_grid/algorithms.dart';
 import 'package:flutter_2d_grid/animated_button_popup.dart';
 import 'package:flutter_2d_grid/fab_with_popup.dart';
+import 'package:flutter_2d_grid/intro_page.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -568,6 +569,19 @@ class SecondRoute extends StatelessWidget {
                 return true;
               }()),
             ),
+          ),
+          ListTile(
+            title: Text('Forgot the tools?'),
+            trailing: FlatButton(
+              child: Text("Show Introduction"),
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => IntroductionPage(
+                  onDone: (){
+                    Navigator.pop(context);
+                  },
+                )));
+              },
+            )
           )
         ],
       ),

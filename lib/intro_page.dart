@@ -16,28 +16,28 @@ class IntroductionPage extends StatelessWidget {
           ),
         ),
         PageViewModel(
-          title: "Learn the tools",
+          title: "Drawing tool",
           body: "To draw walls, tap the brush button and drag your finger on the grid.",
           image: Center(
             child: Image.network("https://domaine.com/image.png", height: 175.0),
           ),
         ),
         PageViewModel(
-          title: "Learn the tools",
+          title: "Drawing tool",
           body: "Long press drawing tool to reveal other brush types such as start and finish node.",
           image: Center(
             child: Image.network("https://domaine.com/image.png", height: 175.0),
           ),
         ),
         PageViewModel(
-          title: "Learn the tools",
+          title: "Eraser tool",
           body: "To erase walls individually, tap the erase button. There's also a button for clearing the whole board.",
           image: Center(
             child: Image.network("https://domaine.com/image.png", height: 175.0),
           ),
         ),
         PageViewModel(
-          title: "Learn the tools",
+          title: "Pan and Zoom tool",
           body: "To pan around and zoom, tap the pan button.",
           image: Center(
             child: Image.network("https://domaine.com/image.png", height: 175.0),
