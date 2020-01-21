@@ -138,7 +138,7 @@ class _VisualizerState extends State<Visualizer> {
             onPressed: (){
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SecondRoute()),
+                MaterialPageRoute(builder: (context) => SettingsPage()),
               );
             },
           )
@@ -507,7 +507,9 @@ class _VisualizerState extends State<Visualizer> {
   }
 }
 
-class SecondRoute extends StatelessWidget {
+class SettingsPage extends StatelessWidget {
+  static const double maxSpeed = 1; // milliseconds delay
+  static const double minSpeed = 400; // milliseconds delay
   @override
   Widget build(BuildContext context) {
     var model = Provider.of<PopUpModel>(context);
@@ -525,7 +527,7 @@ class SecondRoute extends StatelessWidget {
                   case 400:
                     return "Slow";
                     break;
-                  case 10:
+                  case 1:
                     return "Fast";
                     break;
                   default:
@@ -540,12 +542,13 @@ class SecondRoute extends StatelessWidget {
                   width: 200,
                   child: Slider.adaptive(
                     activeColor: Colors.lightBlue,
-                    min: 10,
-                    max: 400,
+                    min: maxSpeed,
+                    max: minSpeed,
                     divisions: 2,
-                    value: speed.toDouble() * -1 + 410,
+                    value: speed.toDouble() * -1 + minSpeed + maxSpeed,
                     onChanged: (val){
-                      model.speed = val.toInt() * -1 + 410;
+                      print(val);
+                      model.speed = (val * -1 + minSpeed + maxSpeed).toInt();
                     },
                   ),
                 );
