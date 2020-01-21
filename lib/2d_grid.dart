@@ -56,6 +56,7 @@ class Grid extends ChangeNotifier{
     //unitSize = min(yBox, xBox);
     addNode(starti, startj, Brush.start);
     addNode(finishi, finishj, Brush.finish);
+    _currentNode = Node(finishi, finishj);
   }
 
   int starti;
@@ -63,7 +64,7 @@ class Grid extends ChangeNotifier{
   int finishi;
   int finishj;
 
-  Node _currentNode = Node(0, 0);
+  Node _currentNode;
 
   double width;
   double height;
@@ -465,7 +466,6 @@ class _GridWidgetState extends State<GridWidget> {
         Selector<Grid,Node>(
           selector: (_,model) => model._currentNode,
           builder: (_,currentNode,__) {
-            print(currentNode.i);
             return CustomPaint(
               painter: PathPainter(currentNode,widget.unitSize),
             );
@@ -575,7 +575,8 @@ class PathExample extends StatelessWidget {
 class PathPainter extends CustomPainter {
   PathPainter(this.currentNode, this.unitSize);
   final double unitSize;
-  Node currentNode;
+  final Node currentNode;
+  Node drawingNode;
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
@@ -584,10 +585,11 @@ class PathPainter extends CustomPainter {
       ..strokeWidth = 30;
 
     Path path = Path();
+    drawingNode = currentNode;
     path.moveTo(currentNode.i* (unitSize + 1) + unitSize/2, currentNode.j* (unitSize + 1) + unitSize/2);
-    while (currentNode.parent != null) {
-      currentNode = currentNode.parent;
-      path.lineTo(currentNode.i* (unitSize + 1) + unitSize/2, currentNode.j* (unitSize + 1) + unitSize/2);
+    while (drawingNode.parent != null) {
+      drawingNode = drawingNode.parent;
+      path.lineTo(drawingNode.i* (unitSize + 1) + unitSize/2, drawingNode.j* (unitSize + 1) + unitSize/2);
     }
     canvas.drawPath(path, paint);
   }
