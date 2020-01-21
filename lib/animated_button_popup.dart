@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_2d_grid/2d_grid.dart';
 import 'package:flutter_2d_grid/algorithms.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum AnimatedButtonPopUpDirection{
   horizontal,
@@ -315,6 +316,11 @@ class _PopUpWidgetState extends State<PopUpWidget> with TickerProviderStateMixin
   }
 }
 
+_setTheme(bool theme) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setBool('darkMode', theme);
+}
+
 class PopUpModel extends ChangeNotifier{
 
   Brightness _brightness = Brightness.light;
@@ -323,6 +329,11 @@ class PopUpModel extends ChangeNotifier{
 
   set brightness(value){
     _brightness = value;
+    if (value == Brightness.dark) {
+      _setTheme(true);
+    }else{
+      _setTheme(false);
+    }
     notifyListeners();
   }
 
