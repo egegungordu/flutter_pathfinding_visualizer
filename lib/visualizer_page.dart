@@ -132,8 +132,7 @@ class _VisualizerState extends State<Visualizer> {
       drawer: drawer(),
       appBar: AppBar(
         actions: <Widget>[
-          FlatButton.icon(
-            label: Text(''),
+          IconButton(
             icon: Icon(Icons.settings,color: Colors.white),
             onPressed: (){
               Navigator.push(
