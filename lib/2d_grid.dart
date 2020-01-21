@@ -63,6 +63,8 @@ class Grid extends ChangeNotifier{
   int finishi;
   int finishj;
 
+  Node _currentNode = Node(0, 0);
+
   double width;
   double height;
   final int rows;
@@ -115,6 +117,7 @@ class Grid extends ChangeNotifier{
   }
 
   void clearPaths(){
+    _currentNode = Node(0, 0);
     //nodeTypes.forEach((f) => f.where((f) => f == 4 || f == 5).forEach((f) => 0));
     staticShortPathNode = List.generate(rows, (_) => List.filled(columns, null));
     for (var i = 0; i < nodeTypes.length; i++) {
@@ -266,6 +269,11 @@ class Grid extends ChangeNotifier{
       currentNode = currentNode.parent;
     }
     staticShortPathNode[currentNode.i][currentNode.j] = Colors.amber;
+    notifyListeners();
+  }
+
+  void drawPath2(Node lastNode){
+    _currentNode = lastNode;
     notifyListeners();
   }
 
@@ -439,29 +447,41 @@ class _GridWidgetState extends State<GridWidget> {
     return Stack(
       children: <Widget>[
         grid,
-        Consumer<Grid>(
-          builder: (_,grid,__) {
+        Selector<Grid,List<List<Color>>>(
+          selector: (_,model) => model.staticNodes,
+          builder: (_,staticNodes,__) {
             return CustomPaint(
-              painter: StaticNodePainter(grid.staticNodes,widget.unitSize)
+              painter: StaticNodePainter(staticNodes,widget.unitSize)
             );
           },
         ),
-        Consumer<Grid>(
-          builder: (_,grid,__) {
+        // Consumer<Grid>(
+        //   builder: (_,grid,__) {
+        //     return CustomPaint(
+        //       painter: StaticNodePainter(grid.staticShortPathNode,widget.unitSize)
+        //     );
+        //   },
+        // ),
+        Selector<Grid,Node>(
+          selector: (_,model) => model._currentNode,
+          builder: (_,currentNode,__) {
+            print(currentNode.i);
+            return CustomPaint(
+              painter: PathPainter(currentNode,widget.unitSize),
+            );
+          },
+        ),
+        Selector<Grid,List<List<Widget>>>(
+          selector: (_,model) => model.nodes,
+          shouldRebuild: (a,b) => true,
+          builder: (_,nodes,__) {
             return Stack(
               children: <Widget>[
-                ...grid.nodes
+                ...nodes
                     .expand((row) => row)
                     .toList()
                     .where((w) => w != null)
               ],
-            );
-          },
-        ),
-        Consumer<Grid>(
-          builder: (_,grid,__) {
-            return CustomPaint(
-              painter: StaticNodePainter(grid.staticShortPathNode,widget.unitSize)
             );
           },
         ),
@@ -559,19 +579,21 @@ class PathPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = Colors.black
+      ..color = Colors.amber
       ..style = PaintingStyle.stroke
-      ..strokeWidth = unitSize/4;
+      ..strokeWidth = 30;
 
     Path path = Path();
-    path.moveTo(unitSize + currentNode.i * unitSize, unitSize + currentNode.j * unitSize);
+    path.moveTo(currentNode.i* (unitSize + 1) + unitSize/2, currentNode.j* (unitSize + 1) + unitSize/2);
     while (currentNode.parent != null) {
-      path.lineTo(unitSize + currentNode.i * unitSize, unitSize + currentNode.j * unitSize);
       currentNode = currentNode.parent;
+      path.lineTo(currentNode.i* (unitSize + 1) + unitSize/2, currentNode.j* (unitSize + 1) + unitSize/2);
     }
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
+  bool shouldRepaint(PathPainter oldDelegate) {
+    return oldDelegate.currentNode != currentNode ? true : false;
+  }
 }
