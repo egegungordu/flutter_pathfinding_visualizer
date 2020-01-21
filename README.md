@@ -1,6 +1,6 @@
 # flutter_pathfinding_visualizer
 
-![](https://github.com/egegungordu/flutter_pathfinding_visualizer/workflows/Test%20and%20Build%20apk/badge.svg)
+![](https://github.com/egegungordu/flutter_pathfinding_visualizer/workflows/Build%20apk/badge.svg)
 
 A project inspired by [Clément Mihailescu's
 Pathfinding Algorithm Visualizer.](https://github.com/clementmihailescu/Pathfinding-Visualizer)
