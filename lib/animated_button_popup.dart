@@ -337,7 +337,7 @@ class PopUpModel extends ChangeNotifier{
     notifyListeners();
   }
 
-  int _speed = 10;
+  int _speed = 1;
 
   int get speed => _speed;
 
