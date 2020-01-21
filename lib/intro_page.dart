@@ -66,13 +66,13 @@ class IntroductionPage extends StatelessWidget {
       next: const Icon(Icons.navigate_next),
       done: const Text("Done", style: TextStyle(fontWeight: FontWeight.w600)),
       dotsDecorator: DotsDecorator(
-        size: const Size.square(10.0),
-        activeSize: const Size(15.0, 10.0),
+        size: const Size.square(7.0),
+        activeSize: const Size(10.0, 10.0),
         activeColor: Theme.of(context).accentColor,
         color: Colors.black26,
-        spacing: const EdgeInsets.symmetric(horizontal: 3.0),
+        spacing: const EdgeInsets.symmetric(horizontal: 2.0),
         activeShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(25.0)
+          borderRadius: BorderRadius.circular(15.0)
         )
       ),
     );
