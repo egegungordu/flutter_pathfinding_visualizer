@@ -96,7 +96,7 @@ class PathfindAlgorithms{
         astar(onShowClosedNode,onShowOpenNode,onFinished,onDrawPath, speed);
         break;
       case VisualizerAlgorithm.dijkstra:
-        dijkstra(onShowClosedNode,onShowOpenNode,onFinished,onDrawPath);
+        dijkstra(onShowClosedNode,onShowOpenNode,onFinished,onDrawPath, speed);
         break;
       case VisualizerAlgorithm.bfs:
         bfs(onShowClosedNode,onShowOpenNode,onFinished,onDrawPath);
@@ -116,7 +116,7 @@ class PathfindAlgorithms{
     startNode.f = startNode.g + startNode.h;
     openSet.add(startNode);
 
-    int mils = 1000;
+    int mils;
     while(openSet.isNotEmpty) {
       int smallest = 0;
       for (int i = 0; i < openSet.length; ++i) {
@@ -128,12 +128,7 @@ class PathfindAlgorithms{
       if(onDrawPath(currentNode, c)){
         break;
       }
-      // if (currentNode.i == endi && currentNode.j == endj) {
-      //   onFinished(c);
-      //   onDrawPath(currentNode, c);
-      //   timer.cancel();
-      // }
-
+      
       openSet.remove(currentNode);
 
       for (Node neighbor in currentNode.neighbors) {
@@ -161,55 +156,9 @@ class PathfindAlgorithms{
       await Future.delayed(Duration(milliseconds: mils));
     }
     onFinished();
-
-    // Timer.periodic(Duration(milliseconds: 10), (timer){
-    //   if (openSet.isNotEmpty) {
-    //     int smallest = 0;
-    //     for (int i = 0; i < openSet.length; ++i) {
-    //       if (openSet[i].f < openSet[smallest].f) {
-    //         smallest = i;
-    //       }
-    //     }
-    //     Node currentNode = openSet[smallest];
-    //     if(onDrawPath(currentNode, c)){
-    //       timer.cancel();
-    //     }
-    //     // if (currentNode.i == endi && currentNode.j == endj) {
-    //     //   onFinished(c);
-    //     //   onDrawPath(currentNode, c);
-    //     //   timer.cancel();
-    //     // }
-
-    //     openSet.remove(currentNode);
-
-    //     for (Node neighbor in currentNode.neighbors) {
-    //       double tentativeGScore = currentNode.g + distance(currentNode.i,currentNode.j,neighbor.i,neighbor.j);
-    //       if (!closedSet.contains(neighbor) && (!openSet.contains(neighbor) || tentativeGScore < neighbor.g)) {
-    //         c++;
-    //         neighbor.parent = currentNode;
-    //         neighbor.g = tentativeGScore;
-    //         neighbor.f = neighbor.g + neighbor.h;
-    //         if (neighbor.i == endi && neighbor.j == endj) {
-    //           onFinished();
-    //           onDrawPath(neighbor, c);
-    //           timer.cancel();
-    //         }
-    //         if (!openSet.contains(neighbor)) {
-    //           openSet.add(neighbor);
-    //           onShowOpenNode(neighbor.i,neighbor.j);
-    //         }
-    //       }
-    //     } 
-    //     closedSet.add(currentNode);
-    //     onShowClosedNode(currentNode.i,currentNode.j);
-    //   }else{
-    //     onFinished();
-    //     timer.cancel();
-    //   }
-    // });
   }
 
-  static void dijkstra(Function onShowClosedNode, Function onShowOpenNode, Function onFinished, Function onDrawPath){
+  static void dijkstra(Function onShowClosedNode, Function onShowOpenNode, Function onFinished, Function onDrawPath, Function speed) async{
     int c = 0;
 
     List<Node> queue = <Node>[];
@@ -217,48 +166,43 @@ class PathfindAlgorithms{
     Node startNode = nodes[starti][startj];
     startNode.g = 0;
     queue.add(startNode);
+    
+    int mils;
 
-    Timer.periodic(Duration(milliseconds: 5), (timer){
-      if (queue.isNotEmpty) {
-        int smallest = 0;
-        for (int i = 0; i < queue.length; ++i) {
-          if (queue[i].g < queue[smallest].g) {
-            smallest = i;
-          }
+    while (queue.isNotEmpty) {
+      int smallest = 0;
+      for (int i = 0; i < queue.length; ++i) {
+        if (queue[i].g < queue[smallest].g) {
+          smallest = i;
         }
-        Node currentNode = queue[smallest];
-        if(onDrawPath(currentNode, c)){
-          timer.cancel();
-        }
-        // if (currentNode.i == endi && currentNode.j == endj) {
-        //   onFinished(c);
-        //   onDrawPath(currentNode, c);
-        //   timer.cancel();
-        // }
-
-        queue.remove(currentNode);
-        currentNode.visited = true;
-        onShowClosedNode(currentNode.i,currentNode.j);
-        for (Node neighbor in currentNode.neighbors) {
-          double tentativeGScore = currentNode.g + distance(currentNode.i,currentNode.j,neighbor.i,neighbor.j);
-          if (!neighbor.visited && tentativeGScore < neighbor.g) {
-            c++;
-            neighbor.parent = currentNode;
-            neighbor.g = tentativeGScore;
-            if (neighbor.i == endi && neighbor.j == endj) {
-              onFinished();
-              onDrawPath(neighbor, c);
-              timer.cancel();
-            }
-            queue.add(neighbor);
-            onShowOpenNode(neighbor.i,neighbor.j);
-          }
-        } 
-      }else{
-        onFinished();
-        timer.cancel();
       }
-    });
+      Node currentNode = queue[smallest];
+      if(onDrawPath(currentNode, c)){
+        break;
+      }
+
+      queue.remove(currentNode);
+      currentNode.visited = true;
+      onShowClosedNode(currentNode.i,currentNode.j);
+      for (Node neighbor in currentNode.neighbors) {
+        double tentativeGScore = currentNode.g + distance(currentNode.i,currentNode.j,neighbor.i,neighbor.j);
+        if (!neighbor.visited && tentativeGScore < neighbor.g) {
+          c++;
+          neighbor.parent = currentNode;
+          neighbor.g = tentativeGScore;
+          if (neighbor.i == endi && neighbor.j == endj) {
+            onFinished();
+            onDrawPath(neighbor, c);
+            break;
+          }
+          queue.add(neighbor);
+          onShowOpenNode(neighbor.i,neighbor.j);
+        }
+      }
+      mils = speed();
+      await Future.delayed(Duration(milliseconds: mils));
+    }
+    onFinished();
   }
 
   static void bfs(Function onShowClosedNode, Function onShowOpenNode, Function onFinished, Function onDrawPath) async{
