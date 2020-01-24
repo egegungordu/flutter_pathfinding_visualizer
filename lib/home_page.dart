@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_2d_grid/intro_page.dart';
 import 'package:flutter_2d_grid/visualizer_page.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,7 +16,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return finished
-     ? Visualizer()
+     ? ChangeNotifierProvider(
+        create: (_) => OperationCountModel(),
+        child: Visualizer()
+       )
      : FutureBuilder(
         future: initialLaunch,
         builder: (context,snapshot){
