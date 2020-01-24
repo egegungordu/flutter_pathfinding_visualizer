@@ -355,15 +355,6 @@ class PopUpModel extends ChangeNotifier{
     notifyListeners();
   }
 
-  int _operations = 0;
-
-  int get operations => _operations;
-
-  set operations(value){
-    _operations = value;
-    notifyListeners();
-  }
-
   Color brushColor1 = Colors.orangeAccent;
   Color brushColor2 = Color(0xFF2E2E2E);
   Color brushColor3 = Color(0xFF2E2E2E);

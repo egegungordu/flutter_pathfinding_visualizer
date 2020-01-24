@@ -4,6 +4,7 @@ import 'package:flutter_2d_grid/2d_grid.dart';
 import 'package:flutter_2d_grid/algorithms.dart';
 import 'package:flutter_2d_grid/animated_button_popup.dart';
 import 'package:flutter_2d_grid/fab_with_popup.dart';
+import 'package:flutter_2d_grid/generation_algorithms.dart';
 import 'package:flutter_2d_grid/intro_page.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -78,14 +79,13 @@ class _VisualizerState extends State<Visualizer> {
 
   bool drawTool = true;
   
-  Grid grid = Grid(50, 75, 50, 10,10, 40,50);
+  Grid grid = Grid(51, 80, 50, 10,10, 40,50);
 
   double brushSize = 0.1;
 
   @override
   initState(){
     super.initState();
-    print("object");
   }
 
   _launchURL(String url) async {
@@ -129,6 +129,7 @@ class _VisualizerState extends State<Visualizer> {
   @override
   Widget build(BuildContext context) {
     var popupmodel = Provider.of<PopUpModel>(context,listen: false);
+    var operationModel = Provider.of<OperationCountModel>(context,listen: false);
     return Scaffold(
       drawer: drawer(),
       appBar: AppBar(
@@ -208,7 +209,7 @@ class _VisualizerState extends State<Visualizer> {
                   return model.speed;
                 },
                 onDrawPath: (Node lastNode,int c) {
-                  popupmodel.operations = c;
+                  operationModel.operations = c;
                   if(model.stop){
                     setState(() {
                       _color6 = Colors.lightGreen[500];
@@ -302,25 +303,33 @@ class _VisualizerState extends State<Visualizer> {
                       ),
                       onPressed: (){
                         model.stop = false;
+                        setActiveButton(3,context);
                         setState(() {
-                          setActiveButton(3,context);
                           isRunning = true;
                           _generationRunning = true;
                         });
                         disableBottomButtons();
-                        grid.generateBoard(
-                          callback: (){
-                            if (model.stop) {
-                              setState(() {
-                                isRunning = false;
-                                _generationRunning = false;
-                              });
-                              enableBottomButtons();
-                              return true;
-                            }
-                            return false;
+                        grid.clearPaths();
+                        //grid.fillWithWall();
+                        GenerateAlgorithms.visualize(
+                          algorithm: model.selectedAlg,
+                          gridd: grid.nodeTypes,
+                          stopCallback: (){
+                            return model.stop;
                           },
-                          function: model.selectedAlg,
+                          onShowCurrentNode: (i,j){
+                            //grid.addNode(i, j, Brush.open);
+                            grid.putCurrentNode(i, j);
+                          },
+                          onRemoveWall: (i,j){
+                            grid.removeNode(i, j, 1);
+                          },
+                          onShowWall: (i,j){
+                            grid.addNode(i, j, Brush.wall);
+                          },
+                          speed: (){
+                            return model.speed;
+                          },
                           onFinished: (){
                             setState(() {
                               isRunning = false;
@@ -329,6 +338,34 @@ class _VisualizerState extends State<Visualizer> {
                             enableBottomButtons();
                           }
                         );
+                        // model.stop = false;
+                        // setState(() {
+                        //   setActiveButton(3,context);
+                        //   isRunning = true;
+                        //   _generationRunning = true;
+                        // });
+                        // disableBottomButtons();
+                        // grid.generateBoard(
+                        //   callback: (){
+                        //     if (model.stop) {
+                        //       setState(() {
+                        //         isRunning = false;
+                        //         _generationRunning = false;
+                        //       });
+                        //       enableBottomButtons();
+                        //       return true;
+                        //     }
+                        //     return false;
+                        //   },
+                        //   function: model.selectedAlg,
+                        //   onFinished: (){
+                        //     setState(() {
+                        //       isRunning = false;
+                        //       _generationRunning = false;
+                        //     });
+                        //     enableBottomButtons();
+                        //   }
+                        // );
                       },
                       onLongPressed: () {
                       },
@@ -475,8 +512,9 @@ class _VisualizerState extends State<Visualizer> {
           Positioned(
             bottom: 5,
             left: 5,
-            child: Selector<PopUpModel, int>(
+            child: Selector<OperationCountModel, int>(
               selector: (context, model) => model.operations,
+              shouldRebuild: (a,b) => true,
               builder: (_,operations,__){
                 return popupmodel.brightness == Brightness.light ? 
                   Text('Operations: ${operations.toString()}',style: TextStyle(backgroundColor: Colors.white.withOpacity(0.6)),)
@@ -504,6 +542,17 @@ class _VisualizerState extends State<Visualizer> {
         ],
       ),
     );
+  }
+}
+
+class OperationCountModel extends ChangeNotifier {
+  int _operations = 0;
+
+  int get operations => _operations;
+
+  set operations(int value){
+    _operations = value;
+    notifyListeners();
   }
 }
 
@@ -547,7 +596,6 @@ class SettingsPage extends StatelessWidget {
                     divisions: 2,
                     value: speed.toDouble() * -1 + minSpeed + maxSpeed,
                     onChanged: (val){
-                      print(val);
                       model.speed = (val * -1 + minSpeed + maxSpeed).toInt();
                     },
                   ),

@@ -19,7 +19,6 @@ int startj = 0;
 
 
 class Node{
-
   Node(this.i, this.j){
     this.h = heuristic(i,j);
   }
@@ -66,7 +65,7 @@ class Node{
 
 class PathfindAlgorithms{
 
-  static visualize({
+  static void visualize({
     VisualizerAlgorithm algorithm, 
     List<List<int>> gridd, 
     int startti,
@@ -193,6 +192,7 @@ class PathfindAlgorithms{
           if (neighbor.i == endi && neighbor.j == endj) {
             onFinished();
             onDrawPath(neighbor, c);
+            queue.clear();
             break;
           }
           queue.add(neighbor);
@@ -209,13 +209,13 @@ class PathfindAlgorithms{
     int mils = 3000;
     while (mils > 1) {
       await Future.delayed(Duration(milliseconds: mils));
-      print(mils);
       mils = mils ~/2;
     }
     onFinished();
   }
-}
 
+  
+}
 
 const double d1 = 1;
 const double d2 = math.sqrt2;

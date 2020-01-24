@@ -129,6 +129,20 @@ class Grid extends ChangeNotifier{
     }
   }
 
+  void fillWithWall(){
+    for (var i = 0; i < nodeTypes.length; i++) {
+      for (var j = 0; j < nodeTypes[0].length; j++) {
+        nodeTypes[i][j] = 1;
+      }
+    }
+    staticNodes.forEach((l) => l.fillRange(0, nodeTypes[0].length-1,Color(0xff212121)));
+    nodeTypes[starti][startj] = 2;
+    nodeTypes[endi][endj] = 3;
+    staticNodes[starti][startj] = null;
+    staticNodes[endi][endj] = null;
+    notifyListeners();
+  }
+
   void addNodeWidgetOnly(int i, int j, Brush type){
     switch (type) {
       case Brush.start:
@@ -370,7 +384,6 @@ class Grid extends ChangeNotifier{
   }
 
   void addSpecialNode(Brush type){
-    print("Start $starti $startj\nFinish $finishi $finishj");
     switch (type) {
       case Brush.start:
         addNode(starti, startj, Brush.start);
@@ -380,6 +393,14 @@ class Grid extends ChangeNotifier{
         break;
       default:
     }
+  }
+
+  double currentPosX;
+  double currentPosY;
+
+  void putCurrentNode(int i,int j){
+    currentPosX = 0.50 + i * (unitSize.toDouble() + 1);
+    currentPosY = 0.50 + j * (unitSize.toDouble() + 1);
   }
 
   void clearBoard({Function onFinished}){
@@ -482,6 +503,19 @@ class _GridWidgetState extends State<GridWidget> {
                     .toList()
                     .where((w) => w != null)
               ],
+            );
+          },
+        ),
+        Consumer<Grid>(
+          builder: (_,model,__) {
+            return Positioned(
+              left: model.currentPosX,
+              top: model.currentPosY,
+              child: Container(
+                color: Colors.red,
+                width: widget.unitSize+1,
+                height: widget.unitSize+1,
+              ),
             );
           },
         ),
