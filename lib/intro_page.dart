@@ -53,9 +53,10 @@ class IntroductionPage extends StatelessWidget {
         PageViewModel(
           title: "Generate!",
           body: "Tap the generate button and let the algorithm do its thing! Long press the generate button to reveal other algorithms.",
-          image: Center(
-            child: Image.network("https://domaine.com/image.png", height: 175.0),
-          ),
+          image: Align(
+            alignment: Alignment.bottomCenter,
+            child: Image.asset("assets/images/generate_hold.png", height: 200.0),
+          )
         ),
         
       ],
