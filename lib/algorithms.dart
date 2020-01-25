@@ -75,7 +75,7 @@ class PathfindAlgorithms{
     Function(int i, int j) onShowClosedNode, 
     Function(int i, int j) onShowOpenNode,
     bool Function(Node lastNode, int count) onDrawPath,
-    Function() onFinished,
+    Function(bool pathFound) onFinished,
     int Function() speed}){
 
     endi = finishi;
@@ -125,7 +125,7 @@ class PathfindAlgorithms{
       }
       Node currentNode = openSet[smallest];
       if(onDrawPath(currentNode, c)){
-        break;
+        return;
       }
       
       openSet.remove(currentNode);
@@ -138,10 +138,10 @@ class PathfindAlgorithms{
           neighbor.g = tentativeGScore;
           neighbor.f = neighbor.g + neighbor.h;
           if (neighbor.i == endi && neighbor.j == endj) {
-            onFinished();
+            onFinished(true);
             onDrawPath(neighbor, c);
             openSet.clear();
-            break;
+            return;
           }
           if (!openSet.contains(neighbor)) {
             openSet.add(neighbor);
@@ -154,7 +154,7 @@ class PathfindAlgorithms{
       mils = speed();
       await Future.delayed(Duration(milliseconds: mils));
     }
-    onFinished();
+    onFinished(false);
   }
 
   static void dijkstra(Function onShowClosedNode, Function onShowOpenNode, Function onFinished, Function onDrawPath, Function speed) async{
@@ -177,7 +177,7 @@ class PathfindAlgorithms{
       }
       Node currentNode = queue[smallest];
       if(onDrawPath(currentNode, c)){
-        break;
+        return;
       }
 
       queue.remove(currentNode);
@@ -190,10 +190,10 @@ class PathfindAlgorithms{
           neighbor.parent = currentNode;
           neighbor.g = tentativeGScore;
           if (neighbor.i == endi && neighbor.j == endj) {
-            onFinished();
+            onFinished(true);
             onDrawPath(neighbor, c);
             queue.clear();
-            break;
+            return;
           }
           queue.add(neighbor);
           onShowOpenNode(neighbor.i,neighbor.j);
@@ -202,7 +202,7 @@ class PathfindAlgorithms{
       mils = speed();
       await Future.delayed(Duration(milliseconds: mils));
     }
-    onFinished();
+    onFinished(false);
   }
 
   static void bfs(Function onShowClosedNode, Function onShowOpenNode, Function onFinished, Function onDrawPath) async{
@@ -211,7 +211,7 @@ class PathfindAlgorithms{
       await Future.delayed(Duration(milliseconds: mils));
       mils = mils ~/2;
     }
-    onFinished();
+    onFinished(true);
   }
 
   

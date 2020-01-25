@@ -130,6 +130,7 @@ class _VisualizerState extends State<Visualizer> {
   Widget build(BuildContext context) {
     var popupmodel = Provider.of<PopUpModel>(context,listen: false);
     var operationModel = Provider.of<OperationCountModel>(context,listen: false);
+    final snackBar = SnackBar(content: Text("Couldn't find path."), duration: Duration(milliseconds: 1400),);
     return Scaffold(
       drawer: drawer(),
       appBar: AppBar(
@@ -220,12 +221,15 @@ class _VisualizerState extends State<Visualizer> {
                   grid.drawPath2(lastNode);
                   return false;
                 },
-                onFinished: () {
+                onFinished: (pathFound) {
                   setState(() {
                     isRunning = false;
                     _color6 = Colors.lightGreen[500];
                   });
                   enableBottomButtons();
+                  if (!pathFound) {
+                    Scaffold.of(context).showSnackBar(snackBar);
+                  }
                 }
               );
             },
