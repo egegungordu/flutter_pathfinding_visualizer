@@ -506,19 +506,19 @@ class _GridWidgetState extends State<GridWidget> {
             );
           },
         ),
-        Consumer<Grid>(
-          builder: (_,model,__) {
-            return Positioned(
-              left: model.currentPosX,
-              top: model.currentPosY,
-              child: Container(
-                color: Colors.red,
-                width: widget.unitSize+1,
-                height: widget.unitSize+1,
-              ),
-            );
-          },
-        ),
+        // Consumer<Grid>(
+        //   builder: (_,model,__) {
+        //     return Positioned(
+        //       left: model.currentPosX,
+        //       top: model.currentPosY,
+        //       child: Container(
+        //         color: Colors.red,
+        //         width: widget.unitSize+1,
+        //         height: widget.unitSize+1,
+        //       ),
+        //     );
+        //   },
+        // ),
       ],
     );
   }
@@ -592,18 +592,6 @@ class GridPainter extends CustomPainter {
   }
   @override
   bool shouldRepaint(GridPainter oldDelegate) => false;
-}
-
-class PathExample extends StatelessWidget {
-  PathExample(this.currentNode, this.unitSize);
-  final double unitSize;
-  final Node currentNode;
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: PathPainter(currentNode, unitSize),
-    );
-  }
 }
 
 class PathPainter extends CustomPainter {
