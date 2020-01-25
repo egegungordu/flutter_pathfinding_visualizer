@@ -12,32 +12,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: PopUpModel(),
-      child: FutureBuilder(
-        future: _getTheme(),
-        builder: (context, snapshot){
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (launch) {
-              var popupmodel = Provider.of<PopUpModel>(context);
-              Future.delayed(Duration.zero,(){popupmodel.brightness = snapshot.data;});
-            }
-            launch = false;
-            return Selector<PopUpModel,Brightness>(
-              selector: (context, model) => model.brightness,
-              builder: (_,brightness,__){
-                return  MaterialApp(
-                  theme: ThemeData(
-                    primarySwatch: Colors.blueGrey,
-                    brightness: brightness,
-                  ),
-                  home: Scaffold(
-                    body: HomePage()
-                  )
-                );
-              },
-            );
-          }else{
-            return CircularProgressIndicator();
-          }
+      child: Selector<PopUpModel,Brightness>(
+        selector: (context, model) => model.brightness,
+        builder: (context,brightness,__){
+          var model = Provider.of<PopUpModel>(context, listen: false);
+          _getTheme().then((bri) => model.brightness = bri);
+          return  MaterialApp(
+            theme: ThemeData(
+              primarySwatch: Colors.blueGrey,
+              brightness: brightness,
+            ),
+            home: Scaffold(
+              body: HomePage()
+            )
+          );
         },
       ),
     );
