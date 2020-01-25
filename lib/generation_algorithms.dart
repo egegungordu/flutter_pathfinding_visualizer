@@ -56,13 +56,31 @@ class GenerateAlgorithms{
         maze(gridd,onShowCurrentNode,onRemoveWall,onFinished,onShowWall,stopCallback,speed);
         break;
       case GridGenerationFunction.random:
-        //dijkstra(onShowClosedNode,onShowOpenNode,onFinished,onDrawPath, speed);
+        random(gridd, onRemoveWall, onFinished, onShowWall, stopCallback, speed);
         break;
       case GridGenerationFunction.recursive:
         //bfs(onShowClosedNode,onShowOpenNode,onFinished,onDrawPath);
         break;
       default:
     }
+  }
+
+  static void random(List<List<int>> grid, Function onRemoveWall,Function onFinished, Function onShowWall, Function stopCallback, Function speed) async {
+    var rand = math.Random.secure();
+    for (var j = 0; j < grid[0].length; j++) {
+      for (var i = 0; i < grid.length; i++) {
+        onRemoveWall(i,j);
+        if (rand.nextInt(3) == 0) {
+          onShowWall(i,j);
+        }
+        if (stopCallback()) {
+          onFinished();
+          return;
+        }
+        await Future.delayed(Duration(milliseconds: speed()~/10));
+      }
+    }
+    onFinished();
   }
 
   static void maze(List<List<int>> grid, Function onShowCurrentNode,Function onRemoveWall,Function onFinished, Function onShowWall, Function stopCallback, Function speed) async {
