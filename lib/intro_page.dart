@@ -17,7 +17,7 @@ class IntroductionPage extends StatelessWidget {
         ),
         PageViewModel(
           title: "Drawing tool",
-          body: "To draw walls, tap the brush button and drag your finger on the grid.",
+          body: "To draw walls, tap the brush button and drag.",
           image: Center(
             child: Image.network("https://domaine.com/image.png", height: 175.0),
           ),
@@ -31,7 +31,7 @@ class IntroductionPage extends StatelessWidget {
         ),
         PageViewModel(
           title: "Eraser tool",
-          body: "To erase walls individually, tap the erase button. There's also a button for clearing the whole board.",
+          body: "To erase walls individually, tap the erase button.",
           image: Center(
             child: Image.network("https://domaine.com/image.png", height: 175.0),
           ),
@@ -45,14 +45,14 @@ class IntroductionPage extends StatelessWidget {
         ),
         PageViewModel(
           title: "Visualize!",
-          body: "Tap the visualize button and watch the path go crazy! Long press the visualize button to reveal other algorithms.",
+          body: "Tap the visualize button! Long press the visualize button to reveal other algorithms.",
           image: Center(
             child: Image.network("https://domaine.com/image.png", height: 175.0),
           ),
         ),
         PageViewModel(
           title: "Generate!",
-          body: "Tap the generate button and let the algorithm do its thing! Long press the generate button to reveal other algorithms.",
+          body: "Tap the generate button! Long press the generate button to reveal other algorithms.",
           image: Align(
             alignment: Alignment.bottomCenter,
             child: Image.asset("assets/images/generate_hold.png", height: 200.0),
