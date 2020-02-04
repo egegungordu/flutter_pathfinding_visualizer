@@ -121,8 +121,8 @@ class Grid extends ChangeNotifier{
     _currentNode = Node(0, 0);
     //nodeTypes.forEach((f) => f.where((f) => f == 4 || f == 5).forEach((f) => 0));
     staticShortPathNode = List.generate(rows, (_) => List.filled(columns, null));
-    for (var i = 0; i < nodeTypes.length; i++) {
-      for (var j = 0; j < nodeTypes[0].length; j++) {
+    for (var i = nodeTypes.length - 1; i > -1; i--) {
+      for (var j = nodeTypes[0].length - 1; j > -1; j--) {
         removePath(i, j);
         //removePath(i, j);
       }
@@ -220,8 +220,10 @@ class Grid extends ChangeNotifier{
               i: i,
               j: j,
               callback: (i, j, color) {
-                _updateStaticNode(i, j, color);
-                removeNodeWidgetOnly(i, j);
+                if (nodeTypes[i][j] == 4) {
+                  _updateStaticNode(i, j, color);
+                  removeNodeWidgetOnly(i, j);
+                }
               },
             )
           );
@@ -238,8 +240,10 @@ class Grid extends ChangeNotifier{
               i: i,
               j: j,
               callback: (i, j, color) {
-                _updateStaticNode(i, j, color);
-                removeNodeWidgetOnly(i, j);
+                if (nodeTypes[i][j] == 5) {
+                  _updateStaticNode(i, j, color);
+                  removeNodeWidgetOnly(i, j);
+                }
               },
             )
           );
