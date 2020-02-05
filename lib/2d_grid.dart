@@ -210,23 +210,24 @@ class Grid extends ChangeNotifier{
           break;
         case Brush.open:
           nodeTypes[i][j] = 4;
-          nodes[i][j] = Positioned(
-            key: UniqueKey(),
-            left: 0.50 + i * (unitSize.toDouble() + 1),
-            top: 0.50 + j * (unitSize.toDouble() + 1),
-            child: VisitedNodePaintWidget(
-              color: Colors.cyan.withOpacity(0.8),
-              unitSize: unitSize,
-              i: i,
-              j: j,
-              callback: (i, j, color) {
-                if (nodeTypes[i][j] == 4) {
-                  _updateStaticNode(i, j, color);
-                  removeNodeWidgetOnly(i, j);
-                }
-              },
-            )
-          );
+          _updateStaticNode(i, j, Colors.cyan.withOpacity(0.8));
+          // nodes[i][j] = Positioned(
+          //   key: UniqueKey(),
+          //   left: 0.50 + i * (unitSize.toDouble() + 1),
+          //   top: 0.50 + j * (unitSize.toDouble() + 1),
+          //   child: VisitedNodePaintWidget(
+          //     color: Colors.cyan.withOpacity(0.8),
+          //     unitSize: unitSize,
+          //     i: i,
+          //     j: j,
+          //     callback: (i, j, color) {
+          //       if (nodeTypes[i][j] == 4) {
+          //         _updateStaticNode(i, j, color);
+          //         removeNodeWidgetOnly(i, j);
+          //       }
+          //     },
+          //   )
+          // );
           break;
         case Brush.closed:
           nodeTypes[i][j] = 5;
