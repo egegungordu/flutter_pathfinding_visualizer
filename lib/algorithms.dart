@@ -217,8 +217,8 @@ class PathfindAlgorithms{
   
 }
 
-const double d1 = 1;
-const double d2 = math.sqrt2;
+const double d1 = 10;
+const double d2 = 14;
 
 double heuristic(int i, int j){
   var dx = (i-endi).abs();
