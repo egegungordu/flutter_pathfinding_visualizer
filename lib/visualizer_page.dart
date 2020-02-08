@@ -264,215 +264,212 @@ class _VisualizerState extends State<Visualizer> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: Theme.of(context).bottomAppBarColor,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Consumer<PopUpModel>(
-                  builder: (_,model,__) {
-                    return AnimatedButtonWithPopUp(
-                      width: 130,
-                      direction: AnimatedButtonPopUpDirection.vertical,
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          text: "Generate\n",
-                          style: TextStyle(color: Colors.black,fontSize: 22, height: 1.0),
-                          children: [
-                            TextSpan(
-                              style: TextStyle(color: Colors.black ,fontSize: 16),
-                              text: ((){
-                                switch (model.selectedAlg) {
-                                  case GridGenerationFunction.maze:
-                                    return "Maze";
-                                    break;
-                                  case GridGenerationFunction.random:
-                                    return "Random";
-                                    break;
-                                  case GridGenerationFunction.recursive:
-                                    return "Recursive";
-                                    break;
-                                  default:
+        child: Padding(
+          padding: const EdgeInsets.only(top: 6.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Consumer<PopUpModel>(
+                builder: (_,model,__) {
+                  return AnimatedButtonWithPopUp(
+                    width: 130,
+                    direction: AnimatedButtonPopUpDirection.vertical,
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: "Generate\n",
+                        style: TextStyle(color: Colors.black,fontSize: 22, height: 1.0),
+                        children: [
+                          TextSpan(
+                            style: TextStyle(color: Colors.black ,fontSize: 16),
+                            text: ((){
+                              switch (model.selectedAlg) {
+                                case GridGenerationFunction.maze:
                                   return "Maze";
-                                }
-                              }())
-                            )
-                          ]
-                        ),
+                                  break;
+                                case GridGenerationFunction.random:
+                                  return "Random";
+                                  break;
+                                case GridGenerationFunction.recursive:
+                                  return "Recursive";
+                                  break;
+                                default:
+                                return "Maze";
+                              }
+                            }())
+                          )
+                        ]
                       ),
-                      onPressed: (){
-                        model.stop = false;
-                        setActiveButton(3,context);
-                        setState(() {
-                          isRunning = true;
-                          _generationRunning = true;
-                        });
-                        disableBottomButtons();
-                        grid.clearPaths();
-                        //grid.fillWithWall();
-                        GenerateAlgorithms.visualize(
-                          algorithm: model.selectedAlg,
-                          gridd: grid.nodeTypes,
-                          stopCallback: (){
-                            return model.stop;
-                          },
-                          onShowCurrentNode: (i,j){
-                            //grid.addNode(i, j, Brush.open);
-                            grid.putCurrentNode(i, j);
-                          },
-                          onRemoveWall: (i,j){
-                            grid.removeNode(i, j, 1);
-                          },
-                          onShowWall: (i,j){
-                            grid.addNode(i, j, Brush.wall);
-                          },
-                          speed: (){
-                            return model.speed;
-                          },
-                          onFinished: (){
-                            setState(() {
-                              isRunning = false;
-                              _generationRunning = false;
-                            });
-                            enableBottomButtons();
-                          }
-                        );
-                        // model.stop = false;
-                        // setState(() {
-                        //   setActiveButton(3,context);
-                        //   isRunning = true;
-                        //   _generationRunning = true;
-                        // });
-                        // disableBottomButtons();
-                        // grid.generateBoard(
-                        //   callback: (){
-                        //     if (model.stop) {
-                        //       setState(() {
-                        //         isRunning = false;
-                        //         _generationRunning = false;
-                        //       });
-                        //       enableBottomButtons();
-                        //       return true;
-                        //     }
-                        //     return false;
-                        //   },
-                        //   function: model.selectedAlg,
-                        //   onFinished: (){
-                        //     setState(() {
-                        //       isRunning = false;
-                        //       _generationRunning = false;
-                        //     });
-                        //     enableBottomButtons();
-                        //   }
-                        // );
-                      },
-                      onLongPressed: () {
-                      },
-                      disabled: _disabled5,
-                      color: _generationRunning ? Colors.redAccent : Theme.of(context).buttonColor,
-                      items: <AnimatedButtonPopUpItem>[
-                        AnimatedButtonPopUpItem(
-                          child: Text("Maze",textAlign: TextAlign.center,style: TextStyle(fontSize: 16,)),
-                          onPressed: () {
-                            model.setActiveAlgorithm(1,context);
-                          },
-                        ),
-                        AnimatedButtonPopUpItem(
-                          child: Text("Random",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
-                          onPressed: () {
-                            model.setActiveAlgorithm(2,context);
-                          },
-                        ),
-                        AnimatedButtonPopUpItem(
-                          child: Text("Recursive",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
-                          onPressed: () {
-                            model.setActiveAlgorithm(3,context);
-                          },
-                        )
-                      ],
-                    );
-                  },
-                ),
-                Container(width: 0,height: 60,),
-                Consumer<PopUpModel>(
-                  builder: (_,model,__) {
-                    return AnimatedButtonWithPopUp(
-                    direction: AnimatedButtonPopUpDirection.horizontal,
-                    child: Image.asset("assets/images/brush.png"),
+                    ),
                     onPressed: (){
-                      setActiveButton(1,context);
+                      model.stop = false;
+                      setActiveButton(3,context);
+                      setState(() {
+                        isRunning = true;
+                        _generationRunning = true;
+                      });
+                      disableBottomButtons();
+                      grid.clearPaths();
+                      //grid.fillWithWall();
+                      GenerateAlgorithms.visualize(
+                        algorithm: model.selectedAlg,
+                        gridd: grid.nodeTypes,
+                        stopCallback: (){
+                          return model.stop;
+                        },
+                        onShowCurrentNode: (i,j){
+                          //grid.addNode(i, j, Brush.open);
+                          grid.putCurrentNode(i, j);
+                        },
+                        onRemoveWall: (i,j){
+                          grid.removeNode(i, j, 1);
+                        },
+                        onShowWall: (i,j){
+                          grid.addNode(i, j, Brush.wall);
+                        },
+                        speed: (){
+                          return model.speed;
+                        },
+                        onFinished: (){
+                          setState(() {
+                            isRunning = false;
+                            _generationRunning = false;
+                          });
+                          enableBottomButtons();
+                        }
+                      );
+                      // model.stop = false;
+                      // setState(() {
+                      //   setActiveButton(3,context);
+                      //   isRunning = true;
+                      //   _generationRunning = true;
+                      // });
+                      // disableBottomButtons();
+                      // grid.generateBoard(
+                      //   callback: (){
+                      //     if (model.stop) {
+                      //       setState(() {
+                      //         isRunning = false;
+                      //         _generationRunning = false;
+                      //       });
+                      //       enableBottomButtons();
+                      //       return true;
+                      //     }
+                      //     return false;
+                      //   },
+                      //   function: model.selectedAlg,
+                      //   onFinished: (){
+                      //     setState(() {
+                      //       isRunning = false;
+                      //       _generationRunning = false;
+                      //     });
+                      //     enableBottomButtons();
+                      //   }
+                      // );
                     },
-                    onLongPressed: () { 
-                      setActiveButton(1,context);
+                    onLongPressed: () {
                     },
-                    disabled: _disabled1,
-                    color: _selectedButton == 1 ? Colors.orangeAccent : Theme.of(context).buttonColor,
+                    disabled: _disabled5,
+                    color: _generationRunning ? Colors.redAccent : Theme.of(context).buttonColor,
                     items: <AnimatedButtonPopUpItem>[
-                       AnimatedButtonPopUpItem(
-                        child: Image.asset("assets/images/wall_node.png",color: model.brushColor1, scale: 1.5,),
+                      AnimatedButtonPopUpItem(
+                        child: Text("Maze",textAlign: TextAlign.center,style: TextStyle(fontSize: 16,)),
                         onPressed: () {
-                          model.setActiveBrush(1);
+                          model.setActiveAlgorithm(1,context);
                         },
                       ),
                       AnimatedButtonPopUpItem(
-                        child: Image.asset("assets/images/start_node.png",color: model.brushColor2, scale: 1.9,),
+                        child: Text("Random",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                         onPressed: () {
-                          model.setActiveBrush(2);
+                          model.setActiveAlgorithm(2,context);
                         },
                       ),
-                       AnimatedButtonPopUpItem(
-                        child: Image.asset("assets/images/end_node.png",color: model.brushColor3, scale: 1.9,),
+                      AnimatedButtonPopUpItem(
+                        child: Text("Recursive",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                         onPressed: () {
-                          model.setActiveBrush(3);
+                          model.setActiveAlgorithm(3,context);
                         },
                       )
-                    ]
+                    ],
                   );
-                  }, 
-                ),
-                Container(width: 0,height: 60,),
-                AnimatedButtonWithPopUp(
-                  child: Image.asset("assets/images/erase.png"),
+                },
+              ),
+              Container(width: 0,height: 60,),
+              Consumer<PopUpModel>(
+                builder: (_,model,__) {
+                  return AnimatedButtonWithPopUp(
+                  direction: AnimatedButtonPopUpDirection.horizontal,
+                  child: Image.asset("assets/images/brush.png"),
                   onPressed: (){
-                    setActiveButton(2,context);
+                    setActiveButton(1,context);
                   },
-                  disabled: _disabled2,
-                  color: _selectedButton == 2 ? Colors.orangeAccent : Theme.of(context).buttonColor,
-                ),
-                Container(width: 0,height: 60,),
-                AnimatedButtonWithPopUp(
-                  child: Image.asset("assets/images/pan.png"),
-                  onPressed: (){
-                    setActiveButton(3,context);
+                  onLongPressed: () { 
+                    setActiveButton(1,context);
                   },
-                  disabled: _disabled3,
-                  color: _selectedButton == 3 ? Colors.orangeAccent : Theme.of(context).buttonColor,
-                ),
-                Container(width: 0,height: 60,),
-                AnimatedButtonWithPopUp(
-                  child: Icon(Icons.delete,size:35,color: Color(0xFF212121),),
-                  color: Theme.of(context).buttonColor,
-                  disabled: _disabled4,
-                  onPressed: (){
-                    // setState(() {
-                    //   _color4 = Colors.redAccent;
-                    //   _disabled4 = true;
-                    //   _disabled5 = true;
-                    //   _disabled6 = true;
-                    // });
-                    grid.clearBoard(
-                      onFinished: () {
-                      }
-                    );
-                  },
-                ),
-              ],
-            ),
+                  disabled: _disabled1,
+                  color: _selectedButton == 1 ? Colors.orangeAccent : Theme.of(context).buttonColor,
+                  items: <AnimatedButtonPopUpItem>[
+                      AnimatedButtonPopUpItem(
+                      child: Image.asset("assets/images/wall_node.png",color: model.brushColor1, scale: 1.5,),
+                      onPressed: () {
+                        model.setActiveBrush(1);
+                      },
+                    ),
+                    AnimatedButtonPopUpItem(
+                      child: Image.asset("assets/images/start_node.png",color: model.brushColor2, scale: 1.9,),
+                      onPressed: () {
+                        model.setActiveBrush(2);
+                      },
+                    ),
+                      AnimatedButtonPopUpItem(
+                      child: Image.asset("assets/images/end_node.png",color: model.brushColor3, scale: 1.9,),
+                      onPressed: () {
+                        model.setActiveBrush(3);
+                      },
+                    )
+                  ]
+                );
+                }, 
+              ),
+              Container(width: 0,height: 60,),
+              AnimatedButtonWithPopUp(
+                child: Image.asset("assets/images/erase.png"),
+                onPressed: (){
+                  setActiveButton(2,context);
+                },
+                disabled: _disabled2,
+                color: _selectedButton == 2 ? Colors.orangeAccent : Theme.of(context).buttonColor,
+              ),
+              Container(width: 0,height: 60,),
+              AnimatedButtonWithPopUp(
+                child: Image.asset("assets/images/pan.png"),
+                onPressed: (){
+                  setActiveButton(3,context);
+                },
+                disabled: _disabled3,
+                color: _selectedButton == 3 ? Colors.orangeAccent : Theme.of(context).buttonColor,
+              ),
+              Container(width: 0,height: 60,),
+              AnimatedButtonWithPopUp(
+                child: Icon(Icons.delete,size:35,color: Color(0xFF212121),),
+                color: Theme.of(context).buttonColor,
+                disabled: _disabled4,
+                onPressed: (){
+                  // setState(() {
+                  //   _color4 = Colors.redAccent;
+                  //   _disabled4 = true;
+                  //   _disabled5 = true;
+                  //   _disabled6 = true;
+                  // });
+                  grid.clearBoard(
+                    onFinished: () {
+                    }
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
