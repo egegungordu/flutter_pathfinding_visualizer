@@ -11,52 +11,52 @@ class IntroductionPage extends StatelessWidget {
         PageViewModel(
           title: "Hey!",
           body: "This app visualizes different pathfinding algorithms. Some of them find the shortest path, while others trade off speed for path length.",
-          image: Center(
-            child: Image.network("https://domaine.com/image.png", height: 175.0),
-          ),
+          // image: Center(
+          //   child: Image.network("https://domaine.com/image.png", height: 175.0),
+          // ),
         ),
         PageViewModel(
           title: "Drawing tool",
           body: "To draw walls, tap the brush button and drag.",
-          image: Center(
-            child: Image.network("https://domaine.com/image.png", height: 175.0),
-          ),
+          // image: Center(
+          //   child: Image.network("https://domaine.com/image.png", height: 175.0),
+          // ),
         ),
         PageViewModel(
           title: "Drawing tool",
           body: "Long press drawing tool to reveal other brush types such as start and finish node.",
-          image: Center(
-            child: Image.network("https://domaine.com/image.png", height: 175.0),
-          ),
+          // image: Center(
+          //   child: Image.network("https://domaine.com/image.png", height: 175.0),
+          // ),
         ),
         PageViewModel(
           title: "Eraser tool",
           body: "To erase walls individually, tap the erase button.",
-          image: Center(
-            child: Image.network("https://domaine.com/image.png", height: 175.0),
-          ),
+          // image: Center(
+          //   child: Image.network("https://domaine.com/image.png", height: 175.0),
+          // ),
         ),
         PageViewModel(
           title: "Pan and Zoom tool",
           body: "To pan around and zoom, tap the pan button.",
-          image: Center(
-            child: Image.network("https://domaine.com/image.png", height: 175.0),
-          ),
+          // image: Center(
+          //   child: Image.network("https://domaine.com/image.png", height: 175.0),
+          // ),
         ),
         PageViewModel(
           title: "Visualize!",
           body: "Tap the visualize button! Long press the visualize button to reveal other algorithms.",
-          image: Center(
-            child: Image.network("https://domaine.com/image.png", height: 175.0),
-          ),
+          // image: Center(
+          //   child: Image.network("https://domaine.com/image.png", height: 175.0),
+          // ),
         ),
         PageViewModel(
           title: "Generate!",
           body: "Tap the generate button! Long press the generate button to reveal other algorithms.",
-          image: Align(
-            alignment: Alignment.bottomCenter,
-            child: Image.asset("assets/images/generate_hold.png", height: 200.0),
-          )
+          // image: Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: Image.asset("assets/images/generate_hold.png", height: 200.0),
+          // )
         ),
         
       ],
