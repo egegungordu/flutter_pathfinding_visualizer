@@ -170,11 +170,8 @@ class _VisualizerState extends State<Visualizer> {
                         case VisualizerAlgorithm.dijkstra:
                           return "Dijkstra";
                           break;
-                        case VisualizerAlgorithm.dfs:
-                          return "DFS";
-                          break;
-                        case VisualizerAlgorithm.bfs:
-                          return "BFS";
+                        case VisualizerAlgorithm.bidir_dijkstra:
+                          return "Bidir.  Dijkstra";
                           break;
                         default:
                         return "Maze";
@@ -221,6 +218,18 @@ class _VisualizerState extends State<Visualizer> {
                   grid.drawPath2(lastNode);
                   return false;
                 },
+                onDrawSecondPath: (Node lastNode, int c) {
+                  operationModel.operations = c;
+                  if(model.stop){
+                    setState(() {
+                      _color6 = Colors.lightGreen[500];
+                    });
+                    enableBottomButtons();
+                    return true;
+                  }
+                  grid.drawSecondPath2(lastNode);
+                  return false;
+                },
                 onFinished: (pathFound) {
                   setState(() {
                     isRunning = false;
@@ -247,15 +256,9 @@ class _VisualizerState extends State<Visualizer> {
                 },
               ),
               AnimatedButtonPopUpItem(
-                child: Text("DFS",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
+                child: Text("Bidirectional Dijkstra",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                 onPressed: () {
                   model.setActivePAlgorithm(3);
-                },
-              ),
-              AnimatedButtonPopUpItem(
-                child: Text("BFS",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
-                onPressed: () {
-                  model.setActivePAlgorithm(4);
                 },
               ),
             ],
@@ -293,7 +296,7 @@ class _VisualizerState extends State<Visualizer> {
                                   return "Random";
                                   break;
                                 case GridGenerationFunction.recursive:
-                                  return "Recursive";
+                                  return "Recursive Maze";
                                   break;
                                 default:
                                 return "Maze";
@@ -387,7 +390,7 @@ class _VisualizerState extends State<Visualizer> {
                         },
                       ),
                       AnimatedButtonPopUpItem(
-                        child: Text("Recursive",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
+                        child: Text("Recursive  Maze",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                         onPressed: () {
                           model.setActiveAlgorithm(3,context);
                         },

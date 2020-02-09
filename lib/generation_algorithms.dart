@@ -53,13 +53,12 @@ class GenerateAlgorithms{
 
     switch (algorithm) {
       case GridGenerationFunction.maze:
-        maze(gridd,onShowCurrentNode,onRemoveWall,onFinished,onShowWall,stopCallback,speed);
         break;
       case GridGenerationFunction.random:
         random(gridd, onRemoveWall, onFinished, onShowWall, stopCallback, speed);
         break;
       case GridGenerationFunction.recursive:
-        //bfs(onShowClosedNode,onShowOpenNode,onFinished,onDrawPath);
+        recursiveMaze(gridd,onShowCurrentNode,onRemoveWall,onFinished,onShowWall,stopCallback,speed);
         break;
       default:
     }
@@ -83,7 +82,7 @@ class GenerateAlgorithms{
     onFinished();
   }
 
-  static void maze(List<List<int>> grid, Function onShowCurrentNode,Function onRemoveWall,Function onFinished, Function onShowWall, Function stopCallback, Function speed) async {
+  static void recursiveMaze(List<List<int>> grid, Function onShowCurrentNode,Function onRemoveWall,Function onFinished, Function onShowWall, Function stopCallback, Function speed) async {
 
     removeWall(MazeNode a, MazeNode b){
       int gridi = a.i * 2 + 1;

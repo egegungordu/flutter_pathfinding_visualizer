@@ -28,8 +28,7 @@ enum GridGenerationFunction{
 enum VisualizerAlgorithm{
   astar,
   dijkstra,
-  dfs,
-  bfs
+  bidir_dijkstra
 }
 
 enum Brush{
@@ -57,6 +56,7 @@ class Grid extends ChangeNotifier{
     addNode(starti, startj, Brush.start);
     addNode(finishi, finishj, Brush.finish);
     _currentNode = Node(finishi, finishj);
+    _currentSecondNode = Node(starti, startj);
   }
 
   int starti;
@@ -65,6 +65,7 @@ class Grid extends ChangeNotifier{
   int finishj;
 
   Node _currentNode;
+  Node _currentSecondNode;
 
   double width;
   double height;
@@ -118,6 +119,7 @@ class Grid extends ChangeNotifier{
   }
 
   void clearPaths(){
+    _currentSecondNode = Node(0, 0);
     _currentNode = Node(0, 0);
     //nodeTypes.forEach((f) => f.where((f) => f == 4 || f == 5).forEach((f) => 0));
     staticShortPathNode = List.generate(rows, (_) => List.filled(columns, null));
@@ -294,6 +296,11 @@ class Grid extends ChangeNotifier{
 
   void drawPath2(Node lastNode){
     _currentNode = lastNode;
+    notifyListeners();
+  }
+
+  void drawSecondPath2(Node lastNode){
+    _currentSecondNode = lastNode;
     notifyListeners();
   }
 
@@ -497,6 +504,14 @@ class _GridWidgetState extends State<GridWidget> {
             );
           },
         ),
+        Selector<Grid,Node>(
+          selector: (_,model) => model._currentSecondNode,
+          builder: (_,currentNode,__) {
+            return CustomPaint(
+              painter: SecondPathPainter(currentNode,widget.unitSize),
+            );
+          },
+        ),
         Selector<Grid,List<List<Widget>>>(
           selector: (_,model) => model.nodes,
           shouldRebuild: (a,b) => true,
@@ -623,6 +638,34 @@ class PathPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(PathPainter oldDelegate) {
+    return oldDelegate.currentNode != currentNode ? true : false;
+  }
+}
+
+class SecondPathPainter extends CustomPainter {
+  SecondPathPainter(this.currentNode, this.unitSize);
+  final double unitSize;
+  final Node currentNode;
+  Node drawingNode;
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = Colors.amber
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 30;
+
+    Path path = Path();
+    drawingNode = currentNode;
+    path.moveTo(currentNode.i* (unitSize + 1) + unitSize/2, currentNode.j* (unitSize + 1) + unitSize/2);
+    while (drawingNode.parent2 != null) {
+      drawingNode = drawingNode.parent2;
+      path.lineTo(drawingNode.i* (unitSize + 1) + unitSize/2, drawingNode.j* (unitSize + 1) + unitSize/2);
+    }
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(SecondPathPainter oldDelegate) {
     return oldDelegate.currentNode != currentNode ? true : false;
   }
 }

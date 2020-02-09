@@ -420,11 +420,7 @@ class PopUpModel extends ChangeNotifier{
         notifyListeners();
         break;
       case 3: //dfs
-        selectedPathAlg = VisualizerAlgorithm.dfs;
-        notifyListeners();
-        break;
-      case 4: //bfs
-        selectedPathAlg = VisualizerAlgorithm.bfs;
+        selectedPathAlg = VisualizerAlgorithm.bidir_dijkstra;
         notifyListeners();
         break;
       default:

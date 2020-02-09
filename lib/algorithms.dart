@@ -30,6 +30,7 @@ class Node{
   double h;
 
   Node parent;
+  Node parent2;
 
   bool visited = false;
 
@@ -75,6 +76,7 @@ class PathfindAlgorithms{
     Function(int i, int j) onShowClosedNode, 
     Function(int i, int j) onShowOpenNode,
     bool Function(Node lastNode, int count) onDrawPath,
+    bool Function(Node lastNode, int count) onDrawSecondPath,
     Function(bool pathFound) onFinished,
     int Function() speed}){
 
@@ -97,8 +99,8 @@ class PathfindAlgorithms{
       case VisualizerAlgorithm.dijkstra:
         dijkstra(onShowClosedNode,onShowOpenNode,onFinished,onDrawPath, speed);
         break;
-      case VisualizerAlgorithm.bfs:
-        bfs(onShowClosedNode,onShowOpenNode,onFinished,onDrawPath);
+      case VisualizerAlgorithm.bidir_dijkstra:
+        bidirDijkstra(onShowClosedNode,onShowOpenNode,onFinished,onDrawPath,onDrawSecondPath, speed);
         break;
       default:
     }
@@ -204,6 +206,98 @@ class PathfindAlgorithms{
     }
     onFinished(false);
   }
+
+  static void bidirDijkstra(Function onShowClosedNode, Function onShowOpenNode, Function onFinished, Function onDrawPath, Function onDrawSecondPath,Function speed) async{
+    int c = 0;
+
+    List<Node> queue = <Node>[];
+    List<Node> queue2 = <Node>[];
+
+    Node startNode = nodes[starti][startj];
+    Node startNode2 = nodes[endi][endj];
+    startNode.g = 0;
+    startNode2.g = 0;
+    queue.add(startNode);
+    queue2.add(startNode2);
+    Node currentNode2 = queue2[0];
+    Node currentNode = queue[0];
+    
+    int mils;
+
+    while (queue.isNotEmpty || queue2.isNotEmpty) {
+      int smallest = 0;
+      for (int i = 0; i < queue.length; ++i) {
+        if (queue[i].g < queue[smallest].g) {
+          smallest = i;
+        }
+      }
+      currentNode = queue[smallest];
+      if(onDrawPath(currentNode, c)){
+        return;
+      }
+
+      queue.remove(currentNode);
+      currentNode.visited = true;
+      onShowClosedNode(currentNode.i,currentNode.j);
+      for (Node neighbor in currentNode.neighbors) {
+        double tentativeGScore = currentNode.g + distance(currentNode.i,currentNode.j,neighbor.i,neighbor.j);
+        if (!neighbor.visited && tentativeGScore < neighbor.g) {
+          c++;
+          neighbor.parent = currentNode;
+          neighbor.g = tentativeGScore;
+          queue.add(neighbor);
+          onShowOpenNode(neighbor.i,neighbor.j);
+          if (queue2.contains(neighbor)) {
+            onFinished(true);
+            onDrawPath(neighbor,c);
+            onDrawSecondPath(neighbor,c);
+            queue.clear();
+            queue2.clear();
+            return;
+          }
+        }
+      }
+      mils = speed();
+      await Future.delayed(Duration(milliseconds: mils));
+      //end node
+      smallest = 0;
+      for (int i = 0; i < queue2.length; ++i) {
+        if (queue2[i].g < queue2[smallest].g) {
+          smallest = i;
+        }
+      }
+      currentNode2 = queue2[smallest];
+      if(onDrawSecondPath(currentNode2, c)){
+        return;
+      }
+
+      queue2.remove(currentNode2);
+      currentNode2.visited = true;
+      onShowClosedNode(currentNode2.i,currentNode2.j);
+      for (Node neighbor in currentNode2.neighbors) {
+        double tentativeGScore = currentNode2.g + distance(currentNode2.i,currentNode2.j,neighbor.i,neighbor.j);
+        if (!neighbor.visited && tentativeGScore < neighbor.g) {
+          c++;
+          neighbor.parent2 = currentNode2;
+          neighbor.g = tentativeGScore;
+          queue2.add(neighbor);
+          onShowOpenNode(neighbor.i,neighbor.j);
+          if (queue.contains(neighbor)) {
+            onFinished(true);
+            onDrawPath(neighbor,c);
+            onDrawSecondPath(neighbor,c);
+            queue.clear();
+            queue2.clear();
+            return;
+          }
+        }
+      }
+      mils = speed();
+      await Future.delayed(Duration(milliseconds: mils));
+    }
+    onFinished(false);
+  }
+
 
   static void bfs(Function onShowClosedNode, Function onShowOpenNode, Function onFinished, Function onDrawPath) async{
     int mils = 3000;
