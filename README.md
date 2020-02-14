@@ -18,9 +18,10 @@ Dark theme             |  Light Theme
 * ### Pathfinding algorithms
 A* | Dijkstra
 :-------------------------:|:-------------------------:
-<img src="https://i.imgur.com/uUzWCrE.gif" width="90%">  |  <img src="https://i.imgur.com/dhhlOde.gif" width="90%">
+<img src="https://i.imgur.com/uUzWCrE.gif" width="100%">  |  <img src="https://i.imgur.com/dhhlOde.gif" width="100%">
 
 * ### Generation algorithms
-Recursive backtrack | Random (1/3 chance)
-:-------------------------:|:-------------------------:
-<img src="https://i.imgur.com/OjgPQ7T.gif" width="90%">  |  <img src="https://i.imgur.com/pGWN3K5.gif" width="90%">
+Recursive backtrack | Random (1/3 chance) | Recursive division
+:-------------------------:|:-------------------------:|:-------------------------:
+<img src="https://i.imgur.com/OjgPQ7T.gif" width="100%">  |  <img src="https://i.imgur.com/pGWN3K5.gif" width="100%"> | <img src="https://i.imgur.com/5Kuajei.gif" width="100%">
+
