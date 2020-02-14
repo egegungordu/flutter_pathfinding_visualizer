@@ -79,7 +79,7 @@ class _VisualizerState extends State<Visualizer> {
 
   bool drawTool = true;
   
-  Grid grid = Grid(51, 80, 50, 10,10, 40,50);
+  Grid grid = Grid(51, 81, 50, 10,10, 40,50);
 
   double brushSize = 0.1;
 
@@ -286,11 +286,11 @@ class _VisualizerState extends State<Visualizer> {
                         style: TextStyle(color: Colors.black,fontSize: 22, height: 1.0),
                         children: [
                           TextSpan(
-                            style: TextStyle(color: Colors.black ,fontSize: 16),
+                            style: TextStyle(color: Colors.black ,fontSize: 14),
                             text: ((){
                               switch (model.selectedAlg) {
-                                case GridGenerationFunction.maze:
-                                  return "Maze";
+                                case GridGenerationFunction.backtracker:
+                                  return "Backtracker Maze";
                                   break;
                                 case GridGenerationFunction.random:
                                   return "Random";
@@ -378,7 +378,7 @@ class _VisualizerState extends State<Visualizer> {
                     color: _generationRunning ? Colors.redAccent : Theme.of(context).buttonColor,
                     items: <AnimatedButtonPopUpItem>[
                       AnimatedButtonPopUpItem(
-                        child: Text("Maze",textAlign: TextAlign.center,style: TextStyle(fontSize: 16,)),
+                        child: Text("Backtracker Maze",textAlign: TextAlign.center,style: TextStyle(fontSize: 16,)),
                         onPressed: () {
                           model.setActiveAlgorithm(1,context);
                         },
@@ -390,7 +390,7 @@ class _VisualizerState extends State<Visualizer> {
                         },
                       ),
                       AnimatedButtonPopUpItem(
-                        child: Text("Recursive  Maze",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
+                        child: Text("Recursive    Maze",textAlign: TextAlign.center,style: TextStyle(fontSize: 16),),
                         onPressed: () {
                           model.setActiveAlgorithm(3,context);
                         },

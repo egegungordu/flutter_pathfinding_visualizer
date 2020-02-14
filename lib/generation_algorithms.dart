@@ -40,6 +40,12 @@ class MazeNode{
   }
 }
 
+class Point{
+  Point(this.i,this.j);
+  int i;
+  int j;
+}
+
 class GenerateAlgorithms{
   static void visualize({
     GridGenerationFunction algorithm, 
@@ -52,13 +58,14 @@ class GenerateAlgorithms{
     int Function() speed}){
 
     switch (algorithm) {
-      case GridGenerationFunction.maze:
+      case GridGenerationFunction.recursive:
+        recursiveMaze(gridd, onRemoveWall, onFinished, onShowWall, stopCallback, speed);
         break;
       case GridGenerationFunction.random:
         random(gridd, onRemoveWall, onFinished, onShowWall, stopCallback, speed);
         break;
-      case GridGenerationFunction.recursive:
-        recursiveMaze(gridd,onShowCurrentNode,onRemoveWall,onFinished,onShowWall,stopCallback,speed);
+      case GridGenerationFunction.backtracker:
+        backtrackMaze(gridd,onShowCurrentNode,onRemoveWall,onFinished,onShowWall,stopCallback,speed);
         break;
       default:
     }
@@ -82,7 +89,7 @@ class GenerateAlgorithms{
     onFinished();
   }
 
-  static void recursiveMaze(List<List<int>> grid, Function onShowCurrentNode,Function onRemoveWall,Function onFinished, Function onShowWall, Function stopCallback, Function speed) async {
+  static void backtrackMaze(List<List<int>> grid, Function onShowCurrentNode,Function onRemoveWall,Function onFinished, Function onShowWall, Function stopCallback, Function speed) async {
 
     removeWall(MazeNode a, MazeNode b){
       int gridi = a.i * 2 + 1;
@@ -107,7 +114,7 @@ class GenerateAlgorithms{
       }
     }
 
-    showWall(MazeNode a){
+    void showWall(MazeNode a){
       int gridi = a.i * 2 + 1;
       int gridj = a.j * 2 + 1;
       int i = a.i;
@@ -163,6 +170,80 @@ class GenerateAlgorithms{
       }
       mils = speed();
       await Future.delayed(Duration(milliseconds: mils));
+    }
+    onFinished();
+  }
+  
+  static void recursiveMaze(List<List<int>> grid, Function onRemoveWall,Function onFinished, Function onShowWall, Function stopCallback, Function speed) async {
+    for (var i = 0; i < grid.length; i++) {
+      for (var j = 0; j < grid[0].length; j++) {
+        onRemoveWall(i,j);
+      }
+    }
+
+    List<Point> queue = <Point>[];
+
+    var rand = math.Random.secure();
+
+    void drawHorizontalWall(int pos, int start, int finish, bool passage){
+      int hole = -1;
+      if (passage) {
+        hole = rand.nextInt((finish-start)~/2) * 2 + start;
+      }
+      for (var i = start; i <= finish; i++) {
+        if (i != hole) {
+          //onShowWall(i,pos);
+          queue.add(new Point(i,pos));
+        }
+      }
+    }
+
+    void drawVerticalWall(int pos, int start, int finish, bool passage){
+      int hole = -1;
+      if (passage) {
+        hole = rand.nextInt((finish-start)~/2) * 2 + start;
+      }
+      for (var i = start; i <= finish; i++) {
+        if (i != hole) {
+          //onShowWall(pos,i);
+          queue.add(new Point(pos,i));
+        }
+      }
+    }
+
+    void drawEdges(){
+      drawVerticalWall(0, 0, grid[0].length-1, false);
+      drawVerticalWall(grid.length-1, 0, grid[0].length-1, false);
+      drawHorizontalWall(0, 0, grid.length-1, false);
+      drawHorizontalWall(grid[0].length-1, 0, grid.length-1, false);
+    }
+    
+    void chooseWall(int left, int right, int top, int bottom){
+      if (right-left < 2 || top-bottom < 2) {
+        return;
+      }
+      bool isHorizontal = rand.nextBool();
+      if (isHorizontal) {
+        int y = rand.nextInt((top-bottom)~/2) * 2 + 1 + bottom;
+        print(right);
+        drawHorizontalWall(y, left, right, true);
+        chooseWall(left, right, top, y+1);
+        chooseWall(left, right, y-1, bottom);
+      }else{
+        int x = rand.nextInt((right-left)~/2) * 2 + 1 + left;
+        drawVerticalWall(x, bottom, top, true);
+        chooseWall(x + 1, right, top, bottom);
+        chooseWall(left, x - 1, top, bottom);
+      }
+    }
+    drawEdges();
+    chooseWall(1,grid.length-2,grid[0].length-2,1);
+    for (var i = 0; i < queue.length; i++) {
+      if(stopCallback()){
+        break;
+      }
+      onShowWall(queue.elementAt(i).i,queue.elementAt(i).j);
+      await Future.delayed(Duration(milliseconds: speed()~/10));
     }
     onFinished();
   }

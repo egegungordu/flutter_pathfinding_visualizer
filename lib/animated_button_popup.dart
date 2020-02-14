@@ -360,7 +360,7 @@ class PopUpModel extends ChangeNotifier{
   Color brushColor3 = Color(0xFF2E2E2E);
   Brush selectedBrush = Brush.wall;
 
-  GridGenerationFunction selectedAlg = GridGenerationFunction.maze;
+  GridGenerationFunction selectedAlg = GridGenerationFunction.recursive;
 
   VisualizerAlgorithm selectedPathAlg = VisualizerAlgorithm.astar;
   
@@ -394,7 +394,7 @@ class PopUpModel extends ChangeNotifier{
   void setActiveAlgorithm(int i, BuildContext context){
     switch (i) {
       case 1: //maze
-        selectedAlg = GridGenerationFunction.maze;
+        selectedAlg = GridGenerationFunction.backtracker;
         notifyListeners();
         break;
       case 2: //random

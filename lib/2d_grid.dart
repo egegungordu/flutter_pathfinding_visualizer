@@ -21,7 +21,7 @@ import 'package:provider/provider.dart';
 // }
 enum GridGenerationFunction{
   random,
-  maze,
+  backtracker,
   recursive,
 }
 
