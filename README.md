@@ -23,5 +23,5 @@ A* | Dijkstra
 * ### Generation algorithms
 Recursive backtrack | Random (1/3 chance) | Recursive division
 :-------------------------:|:-------------------------:|:-------------------------:
-<img src="https://i.imgur.com/OjgPQ7T.gif" width="100%">  |  <img src="https://i.imgur.com/pGWN3K5.gif" width="100%"> | <img src="https://i.imgur.com/5Kuajei.gif" width="100%">
+<img src="https://i.imgur.com/OjgPQ7T.gif" width="100%">  |  <img src="https://i.imgur.com/pGWN3K5.gif" width="100%"> | <img src="https://i.imgur.com/5XDJaYU.gif" width="100%">
 
